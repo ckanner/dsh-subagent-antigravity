@@ -1,10 +1,10 @@
-# Antigravity for DeepSeek Harness
+# dsh-subagent-antigravity
 
 [简体中文](README.zh-CN.md) · [Machine contract](docs/MACHINE.md) · [Compatibility and release checks](docs/VALIDATION.md)
 
 Run Gemini tasks through the **official local `agy` CLI**, using its existing native account login. One supervised runner serves the Desktop task panel, the `subagent_antigravity` tool, and the public ESM machine API. It does not use ACP or call a separate model API.
 
-This is the **0.2.0 release candidate**. The repository does not imply that an npm release, a real-account smoke test, or installation on your Mac has occurred. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
+This is the **0.2.0 release candidate**. A live `agy` 1.5.14 native and evidence-only smoke passed on 2026-11-21; npm publication, desktop acceptance, and account-level Orchestrator/Swarm validation remain separate. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
 
 ## Requirements and installation
 
@@ -146,11 +146,11 @@ These are **adapter flags**, not native `agy` flags. The wrapper emits one JSON 
 
 ## Evidence-only analysis
 
-`toolPolicy:"evidence-only"` creates one uniquely named, owned workspace custom agent with `tools: []`, `mcpServers: []`, `subagent: false`, and `commandExecutionPolicy: off`, selected with official `--agent`. Before sending any user prompt, the adapter requires the real `init` to identify that agent and expose **an empty available-tools list**. Missing init, inherited/nonempty tools, absent or mismatched agent identity all fail closed with no prompt written. Subsequent tool/subagent events also fail the run.
+`toolPolicy:"evidence-only"` creates one uniquely named, owned workspace custom agent with `tools: []`, `mcpServers: []`, `subagent: false`, and `commandExecutionPolicy: off`, selected with official `--agent`. Before sending any user prompt, the adapter requires the real `init` to identify that agent and report a native tool catalog. The catalog is the CLI's registry and may be nonempty; the managed agent's `tools: []` allowlist is the restriction, and any observed tool or subagent step fails the run. Missing init, agent mismatch, or an absent catalog fails closed with no prompt written.
 
-Evidence-only rejects Orchestrator and `subagents`/`swarm` modes. It always disables slash expansion and spawning, including when used for an outer JEV decision. A prompt requesting tools cannot override the verified empty tool list.
+Evidence-only rejects Orchestrator and `subagents`/`swarm` modes. It always disables slash expansion and spawning, including when used for an outer JEV decision. A prompt requesting tools cannot override the managed empty allowlist; a live 1.5.14 check showed a requested shell command was refused.
 
-This uses native capabilities plus observed admission; it does not assume that an empty YAML list will be interpreted consistently by every CLI version. The official [headless documentation](https://antigravity.google/docs/cli/headless/) defines `init.tools` as all available tools and states that `model`/`agent` are included when those flags are set. The [custom-agent documentation](https://antigravity.google/docs/subagents/) defines the permitted-tools allowlist and workspace agent discovery. A version that cannot provide these facts is not admitted for evidence-only execution.
+This uses native capabilities plus observed admission; it does not assume that a YAML list will be interpreted consistently by every CLI version. The official [headless documentation](https://antigravity.google/docs/cli/headless/) defines `init.tools` as the tool catalog, and the [custom-agent documentation](https://antigravity.google/docs/subagents/) defines the managed allowlist and workspace agent discovery. The adapter verifies the selected agent, records the catalog, and rejects every tool or subagent step; a version that cannot identify the agent or catalog is not admitted for evidence-only execution.
 
 Only the exact invocation-created file is cleaned up, after checking inode and content, including on cancellation/parent death. Existing agent files are never overwritten and global settings are never changed. Native automatic initialization, customization discovery and OS-level access are outside this tool allowlist; this is **not an OS sandbox**. For strict host isolation use an independently managed execution environment. Plain `plan` mode by itself is not evidence-only enforcement.
 

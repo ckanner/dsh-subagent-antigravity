@@ -8,7 +8,7 @@ The public import is `@ckanner/dsh-subagent-antigravity/machine`. It has no DSH 
 
 `MACHINE_PROTOCOL_VERSION`, `MACHINE_LIFECYCLE_VERSION`, `MACHINE_ACTIVITY_VERSION`, `MACHINE_CAPABILITIES`, `MACHINE_LIFECYCLE_CAPABILITIES`, `MACHINE_ACTIVITY_CAPABILITIES`, `MachineInputError`, `parseMachineRequest`, `runMachine`, `recoverMachine`, `doctor`.
 
-Machine capabilities distinguish text input, schema output, precise resume, process-group supervision, observed empty-tools admission, fixed Orchestrator models and explicit native collaboration from unsupported native attachments, prewarm, provider-wide cancellation/query and native rename. Collaboration modes are requests with separate observed-child evidence, not claims of full native-tree control.
+Machine capabilities distinguish text input, schema output, precise resume, process-group supervision, managed-agent admission, fixed Orchestrator models and explicit native collaboration from unsupported native attachments, prewarm, provider-wide cancellation/query and native rename. Collaboration modes are requests with separate observed-child evidence, not claims of full native-tree control.
 
 ## Request
 
@@ -22,7 +22,7 @@ Machine capabilities distinguish text input, schema output, precise resume, proc
 | `executionMode` | Explicit `default`, `accept-edits` or `plan`. Default maps to `--mode ''`; the adapter does not inherit native auto mode silently. |
 | `permissionMode` | Explicit `request-review` or `always-proceed`. The latter adds the official `--dangerously-skip-permissions`. Neither is an OS isolation claim. |
 | `sandbox` | Explicit boolean. True requests `--sandbox`; false requires native terminal sandbox settings to be false. Effective OS containment is not observable in init. |
-| `toolPolicy` | `native` by default; `evidence-only` requires a managed custom agent and real empty init.tools before prompt dispatch. |
+| `toolPolicy` | `native` by default; `evidence-only` requires a managed custom agent, a real init catalog and no observed tool or subagent step. |
 | `native` | Optional `{version:1,mode:"native"\|"subagents"\|"swarm",maxObservedAgents?:1..8}`. The limit is an observed total-child guard, not a concurrency cap. Omission preserves the legacy request shape. |
 | `sessionMode`, `sessionId` | `new` without ID, or `resume` with an exact UUID from a confirmed adapter-owned session. |
 | `sessionName` | Optional one-line local human label. Native title remains unconfirmed. |
@@ -61,7 +61,7 @@ Native events are `init`, `step_update` and `result`. Init must supply the expec
 
 Observed effort, executionMode and sandbox are `null`: passing flags is not evidence that the CLI independently echoed them. `configuration.matched` means the observable fields agreed, not that every requested feature has independent attestation. `session.nativeNameStatus` remains `unknown`.
 
-For evidence-only policy, the official docs guarantee `agent` when `--agent` is set and define `tools` as all available tools. The adapter waits for an init with the pinned agent name and an empty tools array before writing any prompt. An incompatible CLI can wait until deadline and fail without prompt dispatch. There is no fallback to a weaker policy. A managed YAML file is created with O_EXCL and cleaned only while its inode/content still match. Parent death uses the same cleanup path. Custom agent files are local workspace files, not account settings; a missing cleanup proof is a failure.
+For evidence-only policy, the official docs guarantee `agent` when `--agent` is set and define `tools` as the tool catalog. The adapter waits for an init with the pinned agent name and an array catalog before writing any prompt; the catalog can contain native registry tools, while the managed agent file carries the empty `tools` allowlist. Any tool or subagent step fails the run. An incompatible CLI can still wait until deadline and fail without prompt dispatch; there is no fallback to a weaker policy. A managed YAML file is created with O_EXCL and cleaned only while its inode/content still match. Parent death uses the same cleanup path. Custom agent files are local workspace files, not account settings; a missing cleanup proof is a failure.
 
 ## Explicit collaboration contract
 

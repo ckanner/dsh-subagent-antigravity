@@ -40,7 +40,7 @@ export interface MachineRequest {
   permissionMode:'request-review'|'always-proceed';
   /** false means the native settings must also have terminal sandbox disabled. */
   sandbox:boolean;
-  /** Creates a native custom agent; verifies init.agent and empty init.tools before sending any prompt. */
+  /** Creates a native custom agent; verifies init.agent and its tool catalog, then rejects tool/subagent steps. */
   toolPolicy?:'native'|'evidence-only';
   native?:NativeOptions;
   sessionMode:'new'|'resume'; sessionId?:string; sessionName?:string;

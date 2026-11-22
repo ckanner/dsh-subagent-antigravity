@@ -16,7 +16,7 @@ The test suite uses `test/fixtures/fake-agy.js`, an executable implementation of
 | --- | --- |
 | Native wire | Successful init/steps/result, exact resume, early native error, truncated/duplicate/missing/nonterminal result, wrong model, schema validation, soft denial despite exit zero, nonzero exit, long progress separate from retained output. |
 | Subscription | API/GCP/credits/permission conflicts rejected before prompt; filtered key and Node injection environment; settings drift rejected; no fallback. |
-| Evidence-only | Exact native agent plus empty tools before stdin; inherited tools and absent init block prompt; tool step fails; managed agent cleanup. |
+| Evidence-only | Exact native agent plus tool catalog before stdin; absent init/agent blocks prompt; tool or subagent steps fail; managed agent cleanup. Live 1.5.14 native and evidence-only smoke passed on 2026-11-21; a requested shell command was refused under the managed empty allowlist. |
 | Orchestrator | Three exact fixed-effort slugs, empty/omitted effort normalization, no native effort override, catalog rejection, 1.5.12 new-feature baseline; evidence-only rejects these models. |
 | Collaboration | Subagents init-tool admission; controlled Swarm prefix and slash-escaped task data; native slash-setting conflict/drift; actual child metadata required; no invented child model/terminal; every nonempty finished_reason fails. |
 | Observation bounds | Total unique child guard includes verifier/monitor and case-insensitive duplicates; cumulative 1 MiB metadata budget covers frames and sparse updates; verified IDs survive failed metadata reduction; 1000 accepted versus 1001 failed/truncated boundary. |
@@ -59,7 +59,7 @@ On the target Mac and its existing official login:
 2. Verify the account has the intended model entitlement and credits fallback remains disabled in official settings. Do not replace this with a token estimate.
 3. Install the exact candidate and integrity into a test Desktop profile. Confirm the Antigravity view, settings, direct launch without parent-model traffic, allowed preset/PTC tool registration, jobs output and cancellation.
 4. Perform one explicitly selected normal Gemini task, a same-binding repair, and cancellation. Record requested/observed model, native session, usage scope, output, local cleanup and remaining unknown fields.
-5. Exercise evidence-only admission with the real CLI. It must return the selected custom agent and empty tools **before stdin**. A CLI that does not do so must be reported incompatible; never bypass the guard.
+5. Exercise evidence-only admission with the real CLI. It must return the selected custom agent and its tool catalog **before stdin**; any tool or subagent step after dispatch fails the run. A CLI that cannot identify the agent or catalog must be reported incompatible; never bypass the guard. The 2026-11-21 `agy` 1.5.14 smoke passed both native and evidence-only paths.
 6. Select a fixed Orchestrator model and explicitly request subagents/Swarm. Record real child metadata, normal versus cutoff root completion, observed guard and cancellation. Do not infer a Swarm board, worker model, child terminal or hard concurrency cap from an adapter-generated prompt.
 7. Check a quota/auth boundary without enabling another billing route. Native child/browser features need separate observed tests; this candidate does not claim image attachment transport or whole-tree budget enforcement.
 

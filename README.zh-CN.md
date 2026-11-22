@@ -1,10 +1,10 @@
-# DSH Antigravity 插件
+# dsh-subagent-antigravity
 
 [English](README.md) · [机器接口](docs/MACHINE.zh-CN.md) · [验收与发布](docs/VALIDATION.md)
 
 通过本机**官方 `agy` CLI** 使用 Gemini，沿用用户已有的官方账号登录。Desktop 任务面板、`subagent_antigravity` 工具和公开 ESM machine API 共用同一套监督 runner。没有 ACP，也没有独立付费 API 回退。
 
-当前是 **0.2.0 候选版**。代码和离线测试不代表已发布 npm、已在用户 Mac 安装或已完成真实账号推理。实际检查范围见验收文档。
+当前是 **0.2.0 候选版**。2026-11-21 已完成 `agy` 1.5.14 的真实 native/evidence-only 冒烟；npm 发布、桌面验收和账号级 Orchestrator/Swarm 验收仍分别记录。实际检查范围见验收文档。
 
 ## 安装前提
 
@@ -114,7 +114,7 @@ subagent_antigravity({
 
 ## 只分析给定证据
 
-`toolPolicy:"evidence-only"` 在工作区创建唯一、归本调用所有的 custom agent，设置 `tools: []`、`mcpServers: []`、`subagent:false`、`commandExecutionPolicy:off`，通过官方 `--agent` 选择。**发送 prompt 前**，必须从真实 init 看到同一个 agent 和空的 available tools。无 init、agent 缺失/不匹配、工具非空均拒绝；后续若出现工具/子 Agent 事件也失败并取消。
+`toolPolicy:"evidence-only"` 在工作区创建唯一、归本调用所有的 custom agent，设置 `tools: []`、`mcpServers: []`、`subagent:false`、`commandExecutionPolicy:off`，通过官方 `--agent` 选择。**发送 prompt 前**，必须从真实 init 看到同一个 agent 和工具目录。该目录是 CLI 注册表，可能非空；真正的限制是受管 agent 的 `tools: []` allowlist，任何工具或子 Agent step 都会使本次调用失败。无 init、agent 不匹配或缺少目录均拒绝，不写入 prompt。
 
 该策略拒绝 Orchestrator 以及 `subagents` / `swarm`，始终禁用 slash 展开和 spawn，包括供外层 JEV 做证据决策时。prompt 要求使用工具不能绕过已核验的空工具列表。
 

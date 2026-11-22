@@ -22,7 +22,7 @@
 | `executionMode` | 显式 `default`、`accept-edits` 或 `plan`；default 传 `--mode ''`，不默默继承 auto。 |
 | `permissionMode` | 显式 `request-review` 或 `always-proceed`；后者增加官方 `--dangerously-skip-permissions`，不是 OS 隔离证明。 |
 | `sandbox` | 显式 boolean。true 请求 `--sandbox`；false 要求原生终端沙箱设置也为 false。init 不证明实际 OS 隔离。 |
-| `toolPolicy` | 默认 `native`；`evidence-only` 要求受管 custom agent，以及派发前真实空 `init.tools`。 |
+| `toolPolicy` | 默认 `native`；`evidence-only` 要求受管 custom agent、真实 init 工具目录，且不得出现工具/子 Agent step。 |
 | `native` | 可选 `{version:1,mode:"native"\|"subagents"\|"swarm",maxObservedAgents?:1..8}`。上限统计已观察子成员总数，不是并发硬上限；省略保持旧请求结构。 |
 | `sessionMode`、`sessionId` | `new` 不提供 ID；`resume` 提供已确认归适配器所有的精确 UUID。 |
 | `sessionName` | 可选单行本地展示名称，不冒称原生标题已写入。 |
@@ -61,7 +61,7 @@ agy --input-format stream-json --output-format stream-json
 
 `configuration.matched` 只证明可观察字段一致。effort、executionMode、sandbox 未独立回显时为 null；`session.nativeNameStatus` 为 unknown。
 
-evidence-only 为本调用独占创建 custom agent，用官方 `--agent` 选择；实际 init 必须报告此 agent 和空的全部可用工具，才能写 prompt。没有这些证据就等待到期限并失败，不回退到较弱策略。受管 YAML 只在 inode/内容仍匹配时删除，父进程死亡也沿用该清理路径；无法确认删除会失败。工作区 custom agent 不等于账号设置，也不构成 OS 沙箱。
+evidence-only 为本调用独占创建 custom agent，用官方 `--agent` 选择；实际 init 必须报告此 agent 和工具目录，才能写 prompt。目录是 CLI 注册表，可能非空；受管 agent 文件中的空 `tools` allowlist 才是限制，任何工具/子 Agent step 都会失败。没有这些证据就等待到期限并失败，不回退到较弱策略。受管 YAML 只在 inode/内容仍匹配时删除，父进程死亡也沿用该清理路径；无法确认删除会失败。工作区 custom agent 不等于账号设置，也不构成 OS 沙箱。
 
 ## 显式协作
 

@@ -60,13 +60,13 @@ test('structured output validates locally and long progress is not retained resu
   const r=await runMachine({...f.request,maxOutputBytes:16},{...f.runtime,onProgress:text=>{progress+=text.length}})
   assert.equal(r.ok,true,JSON.stringify(r.failure));assert.ok(progress>1000000);assert.equal(r.output[0].text,'done')
 })
-test('evidence-only verifies empty tools before dispatch and cleans only its agent',async()=>{
-  for(const scenario of ['success','tools-inherited','missing-agent','wrong-agent','no-init','illegal-tool']){
+test('evidence-only verifies the managed agent and catalog before dispatch and cleans only its agent',async()=>{
+  for(const scenario of ['success','missing-agent','wrong-agent','no-init','illegal-tool']){
     const f=fixture(scenario),r=await runMachine({...f.request,toolPolicy:'evidence-only',timeoutMs:scenario==='no-init'?1000:10000},f.runtime)
     assert.equal(r.ok,scenario==='success',scenario+': '+JSON.stringify(r.failure))
-    if(['tools-inherited','missing-agent','wrong-agent','no-init'].includes(scenario)){assert.equal(existsSync(f.env.FIXTURE_INPUT),false);assert.equal(r.execution.dispatch,'not-dispatched')}
+    if(['missing-agent','wrong-agent','no-init'].includes(scenario)){assert.equal(existsSync(f.env.FIXTURE_INPUT),false);assert.equal(r.execution.dispatch,'not-dispatched')}
     assert.equal(existsSync(join(f.cwd,'.agents/agents')),false)
-    if(scenario==='success')assert.deepEqual(r.configuration.observed.tools,[])
+    if(scenario==='success')assert.ok(Array.isArray(r.configuration.observed.tools))
   }
 })
 test('doctor is inference-free, uses the same filtered environment and does not report quota',async()=>{
