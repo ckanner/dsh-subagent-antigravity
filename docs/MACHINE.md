@@ -160,6 +160,6 @@ Verified against official documents on 2026-11-20:
 - [Models](https://antigravity.google/docs/models): model families and effort. Runtime catalog remains authoritative for installed availability.
 - [Swarm](https://antigravity.google/docs/swarm/): native coordination and the distinction from single-agent Orchestrator handoff.
 - [Hooks](https://antigravity.google/docs/hooks/): the canonical `invoke_subagent` tool and structured child input.
-- [CLI changelog](https://antigravity.google/docs/changelog?tab=cli): headless background-task waiting, nonempty `finished_reason` cutoffs, Swarm in 1.5.5 and the 1.5.6 headless fix. The 0.2.0 adapter uses 1.5.12 as its new-feature baseline.
+- [CLI changelog](https://antigravity.google/docs/changelog?tab=cli): headless background-task waiting, nonempty `finished_reason` cutoffs, Swarm in 1.5.5 and the 1.5.6 headless fix. The 0.2.1 adapter uses 1.5.12 as its new-feature baseline.
 
 These establish a protocol implementation, not real-account compatibility or a benchmark. See VALIDATION.md for release gates.

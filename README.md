@@ -4,7 +4,7 @@
 
 Run Gemini tasks through the **official local `agy` CLI**, using its existing native account login. One supervised runner serves the Desktop task panel, the `subagent_antigravity` tool, and the public ESM machine API. It does not use ACP or call a separate model API.
 
-**0.2.0 is published on npm and recorded as the `v0.2.0` GitHub release.** A live `agy` 1.5.14 native and evidence-only smoke passed on 2026-11-21; desktop acceptance and account-level Orchestrator/Swarm validation remain separate. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
+**0.2.1 is published on npm and recorded as the `v0.2.1` GitHub release.** A live `agy` 1.5.14 native, evidence-only, Orchestrator, explicit-subagent and Swarm smoke passed on 2026-11-21; desktop acceptance and account-level billing/entitlement validation remain separate. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
 
 ## Requirements and installation
 
@@ -169,6 +169,6 @@ The receipt says `verified-local-controls` when those checks pass. Account ident
 - Success requires a normal native successful terminal result without `finished_reason`, valid schema, matching observable configuration and confirmed local cleanup. Explicit subagents also need observed children; Swarm may complete its root invocation with unknown children. Exit zero alone is insufficient; native soft permission denials are failures.
 - `--sandbox` can be unavailable on a machine. Requested sandbox, execution mode and effort are not falsely reported as observed when init omits them. Skipping tool approvals does not prove sandbox is off or every external path is writable.
 - Native child tasks/models/usage can be incomplete; whole-tree usage and remote completion remain unknown. Observed total-child guards do not establish a hard tree budget.
-- Input is text. No native image/PDF attachment transport or verified artifact-return channel is claimed.
+- Input is text. The official headless `stream-json` contract accepts only `text` content blocks; a live `agy` 1.5.14 image block was rejected with `stream input content block type "image" is not supported (only "text")`. Desktop multimodal input does not transfer through this machine API. No PDF or artifact-return transport is claimed.
 
 See [validation](docs/VALIDATION.md) for what was actually tested and the remaining Mac/account release gates.

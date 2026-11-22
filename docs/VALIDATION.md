@@ -27,7 +27,7 @@ The test suite uses `test/fixtures/fake-agy.js`, an executable implementation of
 | Desktop client | Public ModuleLoader/slots/remote.commands contract, real React render, direct owner-bound start, Orchestrator fixed-effort display, Swarm/limit selection, unknown member display, evidence-only conflict, defaults load without inference and revisioned settings mutation. |
 | Packed artifact | Real npm tarball installed outside the source tree without DSH peers; exported API/types/bin/client/patch/supervisor and both machine-contract languages present; new turn, evidence-only, Orchestrator/Swarm and read-only recovery through installed package. |
 
-`scripts/test-package.js` prints exact tarball integrity and writes ignored `candidate.json` for a local acceptance run. 0.2.0 is now published to npm and has a `v0.2.0` GitHub release; the manual publication bytes were verified and the trusted publisher is configured for future tag releases.
+`scripts/test-package.js` prints exact tarball integrity and writes ignored `candidate.json` for a local acceptance run. 0.2.1 is published to npm and has a `v0.2.1` GitHub release; the tag release was produced through the configured trusted publisher. The live native, evidence-only, Orchestrator, explicit-subagent and Swarm checks are recorded below.
 
 ## 0.2.0 follow-up, 2026-11-20
 

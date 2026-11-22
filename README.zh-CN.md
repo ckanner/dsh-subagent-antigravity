@@ -4,7 +4,7 @@
 
 通过本机**官方 `agy` CLI** 使用 Gemini，沿用用户已有的官方账号登录。Desktop 任务面板、`subagent_antigravity` 工具和公开 ESM machine API 共用同一套监督 runner。没有 ACP，也没有独立付费 API 回退。
 
-**0.2.0 已发布到 npm，并记录为 `v0.2.0` GitHub Release。** 2026-11-21 已完成 `agy` 1.5.14 的真实 native/evidence-only 冒烟；桌面验收和账号级 Orchestrator/Swarm 验收仍分别记录。实际检查范围见验收文档。
+**0.2.1 已发布到 npm，并记录为 `v0.2.1` GitHub Release。** 2026-11-21 已完成 `agy` 1.5.14 的真实 native、evidence-only、Orchestrator、显式子智能体和 Swarm 冒烟；桌面验收及账号级账单/权益仍分别记录。实际检查范围见验收文档。
 
 ## 安装前提
 
@@ -132,4 +132,4 @@ subagent_antigravity({
 
 成功还必须有无非空 `finished_reason` 的正常原生 SUCCESS 终态、可观测身份/模型/目录一致、schema 有效及本地清理确认；显式协作还要求已观察成员。exit 0、WAITING/RUNNING、soft-denied、半截输出不能成功。effort、executionMode、sandbox 没有原生回显时保持 unknown。`--dangerously-skip-permissions` 不等于沙箱关闭或任意路径可写；`--sandbox` 也可能在不支持机器上无效。
 
-本地进程组退出不证明远端或所有子工作已完成；无终态保留 unknown，恢复只读原 journal，绝不重放。观察上限不构成整树硬预算；不承诺原生图片/PDF 输入或已验证的截图产物回传。真实 Mac、账号、模型权益和完整 Desktop 验收见 [验收文档](docs/VALIDATION.md)。
+本地进程组退出不证明远端或所有子工作已完成；无终态保留 unknown，恢复只读原 journal，绝不重放。观察上限不构成整树硬预算。官方 headless `stream-json` 只接受 `text` content block；真实 `agy` 1.5.14 已拒绝 image block（`stream input content block type "image" is not supported (only "text")`），桌面端多模态输入不会自动进入本 machine API；不声明 PDF 或 artifact 回传。真实 Mac、账号、模型权益和完整 Desktop 验收见 [验收文档](docs/VALIDATION.md)。
