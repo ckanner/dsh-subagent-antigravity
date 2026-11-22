@@ -31,13 +31,13 @@ The test suite uses `test/fixtures/fake-agy.js`, an executable implementation of
 
 ## 0.2.0 follow-up, 2026-11-20
 
-The source suite passed **35/35** tests. `npm run check` also installed the real 0.2.0 tarball into a directory outside the checkout and passed public ESM, strict TypeScript, wrapper, supervisor, journal, evidence-only and Orchestrator/Swarm consumption. Every model response in these checks came from the documented-protocol fixture; no real account inference was used.
+The source suite passed **35/35** tests. `npm run check` also installed the real 0.2.0 tarball into a directory outside the checkout and passed public ESM, strict TypeScript, wrapper, supervisor, journal, evidence-only and Orchestrator/Swarm consumption. Fixture checks do not establish live behavior. On 2026-11-21, a live `agy` 1.5.14 native call and a live evidence-only call both returned a successful terminal result; a requested shell command was refused under the managed empty allowlist. Account entitlement, billing, Desktop acceptance and Orchestrator/Swarm account behavior remain separate.
 
 Review closed two concrete retention/resume defects: child metadata now has an aggregate byte budget including sparse updates, with consistent 1000/1001 failure-boundary receipts; and an owned Desktop resume preserves an originally absent native binding even after the saved defaults change to Swarm. Explicit changed bindings remain rejected. Regression tests exercise both cases through the actual runner/CLI process boundary.
 
 The first package-install attempt failed because the environment's home tmpfs was full. The same gate passed after using a workspace npm cache; no account settings or shared cache contents were deleted. Final candidate integrity and the disposable-profile install must be checked together using `candidate.json`, since a later documentation edit also changes tarball bytes.
 
-中文补充：0.2.0 源码 35 项测试全部通过，真实 tarball 的隔离安装、公开接口/类型/包装命令以及 Orchestrator/Swarm fixture 消费均通过。Review 修复累计元数据预算和默认值变化后的旧会话续跑问题。首次安装因环境 home tmpfs 空间耗尽失败，改用工作区缓存后通过；没有删除共享缓存或修改账号。最终候选摘要与真实 DSH 临时 profile 安装应绑定同一份字节，离线结果仍不代替真实账号与用户 Mac 验收。
+中文补充：0.2.0 源码 35 项测试全部通过，真实 tarball 的隔离安装、公开接口/类型/包装命令以及 Orchestrator/Swarm fixture 消费均通过。Review 修复累计元数据预算和默认值变化后的旧会话续跑问题。首次安装因环境 home tmpfs 空间耗尽失败，改用工作区缓存后通过；没有删除共享缓存或修改账号。2026-11-21 另外完成了 `agy` 1.5.14 的真实 native/evidence-only 冒烟，证明受管空 allowlist 会拒绝 shell 命令；账号权益、账单、桌面验收和 Orchestrator/Swarm 真实账号行为仍未验证。
 
 ## Host installation
 
