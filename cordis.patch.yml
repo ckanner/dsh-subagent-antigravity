@@ -1,7 +1,7 @@
 # Official local CLI. Presets must also explicitly allow subagent_antigravity.
 - insert:
     - id: antigravity
-      name: @ckanner/dsh-subagent-antigravity
+      name: "@ckanner/dsh-subagent-antigravity"
       config:
         command: agy
         presets: [daily, heavy, cordis]
