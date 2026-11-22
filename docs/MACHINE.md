@@ -8,7 +8,7 @@ The public import is `@ckanner/dsh-subagent-antigravity/machine`. It has no DSH 
 
 `MACHINE_PROTOCOL_VERSION`, `MACHINE_LIFECYCLE_VERSION`, `MACHINE_ACTIVITY_VERSION`, `MACHINE_CAPABILITIES`, `MACHINE_LIFECYCLE_CAPABILITIES`, `MACHINE_ACTIVITY_CAPABILITIES`, `MachineInputError`, `parseMachineRequest`, `runMachine`, `recoverMachine`, `doctor`.
 
-Machine capabilities distinguish text input, schema output, precise resume, process-group supervision, managed-agent admission, fixed Orchestrator models and explicit native collaboration from unsupported native attachments, prewarm, provider-wide cancellation/query and native rename. Collaboration modes are requests with separate observed-child evidence, not claims of full native-tree control.
+Machine capabilities distinguish text input, schema output, precise resume, process-group supervision, managed-agent admission, fixed Orchestrator models and explicit native collaboration from unsupported native attachments, prewarm, provider-wide cancellation/query and native rename. Subagent collaboration is a request with separate observed-child evidence; Swarm root completion is accepted with unknown child metadata and never claims full native-tree control.
 
 ## Request
 
@@ -75,7 +75,7 @@ For evidence-only policy, the official docs guarantee `agent` when `--agent` is 
 
 Every slash in the encoded task is escaped as the JSON sequence `\u002f`. Caller text cannot introduce another slash command or a skill invocation into the adapter's command prefix. The native `disableSlashCommands:true` setting is a pre-dispatch conflict for Swarm. This setting enters the native configuration fingerprint; changing it during a call fails. The adapter neither edits settings nor supports arbitrary command strings.
 
-Both explicit collaboration modes require actual `step_update.subagent_info.subagents` evidence. A normal root terminal without child metadata yields `collaboration-not-observed`, even though `native.completion.state` can truthfully say the CLI invocation completed. Swarm's `dispatch.method:"slash-command"` records the command the adapter requested. It does not attest command expansion, board existence, a complete member roster, or worker model selection.
+Explicit `subagents` requires actual `step_update.subagent_info.subagents` evidence. A normal subagent root terminal without child metadata yields `collaboration-not-observed`, even though `native.completion.state` can truthfully say the CLI invocation completed. Swarm's `dispatch.method:"slash-command"` records the command the adapter requested; a successful Swarm root terminal is accepted with `collaborationObserved:false` and `children:"unknown"`. It does not attest command expansion, board existence, a complete member roster, or worker model selection.
 
 Child IDs are UUID-validated, distinct from the root, deduplicated case-insensitively, and counted across the whole invocation. The optional `maxObservedAgents` is a **total observed unique child limit**, including workers, verifier and monitor. When observed count exceeds it the owned CLI process group is stopped and the receipt fails with `observed-agent-limit`. It always reports `native.limit.hard:false`; launch timing, unreported agents, concurrent work, nesting and total quota use are not hard-bounded by this guard.
 
@@ -123,7 +123,7 @@ The adapter cannot infer two differently identified prompts describe the same ta
 
 ## Receipt, recovery and usage
 
-`ok:true` requires a normal successful native terminal without a finished reason, locally valid schema, matching observable configuration, no soft denials/process failure, and confirmed local cleanup. Explicit collaboration also needs child evidence and must remain within the observed guard. The result separates:
+`ok:true` requires a normal successful native terminal without a finished reason, locally valid schema, matching observable configuration, no soft denials/process failure, and confirmed local cleanup. Explicit subagents also need child evidence and must remain within the observed guard; Swarm may complete with unknown children. The result separates:
 
 - requested binding and native observations;
 - local execution, turn dispatch and native provider-work state;

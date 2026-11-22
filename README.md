@@ -23,7 +23,7 @@ npm run check
 `npm run test:package` prints the exact candidate `.tgz` and integrity. The supported DSH installation entry is:
 
 ```sh
-dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.2.0.tgz
+dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.2.1.tgz
 ```
 
 Use a disposable profile for candidate acceptance first. Registry installation by package name becomes appropriate only after that exact version is published. There are no install scripts and no automatic inference tests.
@@ -96,7 +96,7 @@ subagent_antigravity({
 | `subagents` | Ask the coordinator to delegate and collect results. `init.tools` must advertise `invoke_subagent` before any prompt is sent. Slash expansion remains disabled. |
 | `swarm` | Send the adapter-owned `/swarm` command with user task text encoded as JSON data. Existing `disableSlashCommands:true` settings block the request; the adapter does not change them. |
 
-Both explicit collaboration modes require observed child metadata. A normal root result without it fails with `collaboration-not-observed`. The receipt distinguishes the requested command from observed children; it does not invent a Swarm board, selected worker models or child terminal states. Any nonempty native `finished_reason`, including `print_timeout`, fails even when status is SUCCESS and exit is zero, following the official [headless/changelog contract](https://antigravity.google/docs/changelog?tab=cli).
+Explicit subagents require observed child metadata; a normal subagent root result without it fails with `collaboration-not-observed`. Swarm is different: a successful adapter-owned `/swarm` root invocation is accepted even when `agy` 1.5.14 exposes no child metadata, but the receipt records `collaborationObserved:false`, `children:"unknown"` and never claims a board, worker models or child terminal states. Any nonempty native `finished_reason`, including `print_timeout`, fails even when status is SUCCESS and exit is zero, following the official [headless/changelog contract](https://antigravity.google/docs/changelog?tab=cli).
 
 `maxObservedAgents` is an optional integer from 1 to 8. It counts **all unique observed child IDs**, including verifier and monitor. Exceeding it stops this owned CLI invocation. Its receipt always says `hard:false`: this is an observation guard, not a native concurrency cap, a complete remote-tree limit or a quota guarantee. Whole-tree usage and child models/states remain unknown when the protocol does not report them. URI metadata is retained but never opened automatically.
 
@@ -166,7 +166,7 @@ The receipt says `verified-local-controls` when those checks pass. Account ident
 
 - One invocation, one CLI process, one text turn; exact conversation UUID for resume. No global “latest” session, no persistent pool or prewarm claim.
 - Resume is permitted only for adapter-owned, terminal, clean conversations with identical directory/model/effort/mode/permission/tool policy/native options/native settings. Concurrent or unresolved resumes are blocked across processes.
-- Success requires a normal native successful terminal result without `finished_reason`, valid schema, matching observable configuration and confirmed local cleanup. Explicit collaboration also needs observed children. Exit zero alone is insufficient; native soft permission denials are failures.
+- Success requires a normal native successful terminal result without `finished_reason`, valid schema, matching observable configuration and confirmed local cleanup. Explicit subagents also need observed children; Swarm may complete its root invocation with unknown children. Exit zero alone is insufficient; native soft permission denials are failures.
 - `--sandbox` can be unavailable on a machine. Requested sandbox, execution mode and effort are not falsely reported as observed when init omits them. Skipping tool approvals does not prove sandbox is off or every external path is writable.
 - Native child tasks/models/usage can be incomplete; whole-tree usage and remote completion remain unknown. Observed total-child guards do not establish a hard tree budget.
 - Input is text. No native image/PDF attachment transport or verified artifact-return channel is claimed.

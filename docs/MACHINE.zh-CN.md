@@ -75,7 +75,7 @@ evidence-only 为本调用独占创建 custom agent，用官方 `--agent` 选择
 
 JSON 任务中的所有 `/` 转成 `\u002f`，用户文本不能在命令前缀中增加 slash command 或 skill。已有 `disableSlashCommands:true` 是 Swarm 的派发前冲突，该设置进入配置指纹；中途漂移会失败。适配器不修改设置，不开放任意 command 字符串。
 
-显式协作要求真实 `step_update.subagent_info.subagents`。根调用正常结束却没有子成员时，返回 `collaboration-not-observed`；同时 `native.completion.state` 仍可如实写当前 CLI invocation 已完成。Swarm 的 `dispatch.method:"slash-command"` 记录请求的传输方式，不证明命令展开、board、完整 roster 或 worker 模型。
+显式 `subagents` 要求真实 `step_update.subagent_info.subagents`。子智能体根调用正常结束却没有成员时，返回 `collaboration-not-observed`；同时 `native.completion.state` 仍可如实写当前 CLI invocation 已完成。Swarm 的 `dispatch.method:"slash-command"` 记录请求的传输方式；成功的 Swarm 根调用以 `collaborationObserved:false`、`children:"unknown"` 接受，不证明命令展开、board、完整 roster 或 worker 模型。
 
 子 ID 必须为 UUID、不能等于根会话，忽略大小写去重。`maxObservedAgents` 按整个 invocation 累积唯一子成员，包含 worker/verifier/monitor；超过后停止拥有的 CLI 进程组，失败类别为 `observed-agent-limit`。固定 `native.limit.hard:false`，不保证原生并发、未报告的成员、嵌套层级或总额度。
 

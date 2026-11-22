@@ -55,6 +55,7 @@ process.stdin.on('end',async()=>{
     if(scenario==='child-limit')subagents.push({conversation_id:'cccccccc-1111-2222-3333-444444444444',type_name:'monitor',role:'Observe completion'})
     if(scenario==='malformed-child')subagents[0].workspace_uris=[42]
     if(scenario==='root-child')subagents[0].conversation_id=id
+    emit({event:'step_update',step_update:{conversation_id:id,step_index:1,state:'ACTIVE',step_type:'subagent',tool_name:'invoke_subagent',subagent_info:{subagents:[{type_name:'research',role:'Response Worker',initial_prompt:'Reply with only: subagent ok'}]}}})
     emit({event:'step_update',step_update:{conversation_id:id,step_index:2,state:'DONE',step_type:'tool',subagent_info:{subagents}}})
     emit({event:'step_update',step_update:{conversation_id:id,step_index:3,state:'DONE',step_type:'tool',subagent_info:{subagents:[{conversation_id:subagents[0].conversation_id.toUpperCase(),role:'Implement and validate bounded component'}]}}})
     if(['children-hang','child-limit'].includes(scenario)){setInterval(()=>{},1000);return}

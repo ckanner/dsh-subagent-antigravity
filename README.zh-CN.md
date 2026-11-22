@@ -23,7 +23,7 @@ npm run check
 `test:package` 输出真实 `.tgz` 及 integrity。先在临时 DSH profile 验收：
 
 ```sh
-dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.2.0.tgz
+dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.2.1.tgz
 ```
 
 只有该版本正式发布后，才按 npm 包名安装。包没有安装脚本，也不在安装或打开设置时偷偷调用模型。
@@ -96,7 +96,7 @@ subagent_antigravity({
 | `subagents` | 要求协调者委派并汇总子任务；发 prompt 前，真实 `init.tools` 必须包含 `invoke_subagent`；继续禁用 slash 展开。 |
 | `swarm` | 仅由适配器合成 `/swarm` 前缀，用户任务作为 JSON 数据。原生 `disableSlashCommands:true` 会阻止调用，插件不会修改设置。 |
 
-显式协作必须观察到子成员元数据；只有根 SUCCESS、没有子成员证据时，以 `collaboration-not-observed` 失败。receipt 区分请求的命令与已观察成员，不伪造 Swarm board、子模型或子成员终态。根据[官方 headless/changelog 契约](https://antigravity.google/docs/changelog?tab=cli)，非空 `finished_reason`（含 `print_timeout`）一律失败，即便同时给出 SUCCESS 和 exit 0。
+显式子智能体必须观察到成员元数据；只有根 SUCCESS、没有成员证据时，以 `collaboration-not-observed` 失败。Swarm 不同：adapter 请求的 `/swarm` 根调用成功时，即使 `agy` 1.5.14 没有返回成员元数据也接受，但 receipt 明确写 `collaborationObserved:false`、`children:"unknown"`，不伪造 board、worker 模型或成员终态。根据[官方 headless/changelog 契约](https://antigravity.google/docs/changelog?tab=cli)，非空 `finished_reason`（含 `print_timeout`）一律失败，即便同时给出 SUCCESS 和 exit 0。
 
 `maxObservedAgents` 可选，整数 1–8，统计**全部已观察的唯一子成员 ID**，包含 verifier、monitor。超出后停止本调用；回执固定 `hard:false`。这不是原生并发硬上限、完整远端树上限或额度保证。整树用量、未报告的子模型/终态保留 unknown。`log_uri` / `workspace_uris` 仅作为元数据保存，不自动打开。
 

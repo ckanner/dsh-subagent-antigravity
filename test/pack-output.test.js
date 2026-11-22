@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { parsePackOutput } from '../scripts/pack-output.js'
 
-const name = '@ckanner/dsh-subagent-antigravity', version = '0.2.0'
+const name = '@ckanner/dsh-subagent-antigravity', version = '0.2.1'
 const packed = { name, version, filename: `${name.replace(/^@/, '').replace('/', '-')}-${version}.tgz`, integrity: 'sha512-test', files: [{ path: 'lib/machine.js' }] }
 
 test('npm 11 array and npm 12 name-keyed object retain the same complete package record', () => {
@@ -21,11 +21,11 @@ test('pack output must contain exactly one non-null object', () => {
 test('both npm output forms bind name, version and the exact safe tarball filename', () => {
   for (const edit of [
     { name: 'another-package' }, { name: undefined },
-    { version: '0.2.1' }, { version: undefined },
+    { version: '0.2.2' }, { version: undefined },
     { filename: 'another-package-0.1.0.tgz' }, { filename: undefined },
-    { filename: '../ckanner-dsh-subagent-antigravity-0.2.0.tgz' },
-    { filename: '/tmp/ckanner-dsh-subagent-antigravity-0.2.0.tgz' },
-    { filename: 'subdir\\ckanner-dsh-subagent-antigravity-0.2.0.tgz' },
+    { filename: '../ckanner-dsh-subagent-antigravity-0.2.1.tgz' },
+    { filename: '/tmp/ckanner-dsh-subagent-antigravity-0.2.1.tgz' },
+    { filename: 'subdir\\ckanner-dsh-subagent-antigravity-0.2.1.tgz' },
   ]) {
     const mismatched = { ...packed, ...edit }
     for (const output of [{ [name]: mismatched }, [mismatched]]) {

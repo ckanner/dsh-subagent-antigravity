@@ -53,7 +53,7 @@ test('native subagents check init before dispatch and retain only observed child
   assert.equal(r.native.children[0].logUri,'https://example.invalid/worker');assert.deepEqual(r.native.children[0].workspaceUris,['file:///metadata-only/work'])
   assert.equal(r.native.completion.children,'unknown');assert.equal(r.native.completion.source,'normal-result-and-cli-exit')
   assert.equal(r.native.aggregateUsageStatus,'unknown');assert.equal(r.costUSD,null)
-  assert.equal(activity.filter(event=>event.scope==='child').length,2);assert.equal(activity.find(event=>event.scope==='child').native.observedAgents,2)
+  assert.equal(activity.filter(event=>event.scope==='child').length,3);assert.equal(activity.filter(event=>event.scope==='child').at(-1).native.observedAgents,2)
   assert.equal(nativeCall(f).args.includes('--disable-slash-commands'),true)
   const missing=fixture('no-subagent-tool'),denied=await runMachine(missing.request,missing.runtime)
   assert.equal(denied.ok,false);assert.equal(denied.execution.dispatch,'not-dispatched');assert.match(denied.failure.detail,/invoke_subagent/)
@@ -88,13 +88,14 @@ test('collaboration fails closed on blocked slash expansion, unsupported version
   assert.equal(changed.ok,false);assert.match(changed.failure.detail,/disableSlashCommands|settings/)
 })
 
-test('requested collaboration needs child evidence and does not invent native completion',async()=>{
-  for(const mode of ['subagents','swarm']){
-    const f=fixture('success'),r=await runMachine({...f.request,native:{version:1,mode}},f.runtime)
-    assert.equal(r.ok,false);assert.equal(r.failure.category,'collaboration-not-observed')
-    assert.equal(r.execution.outcome,'failed');assert.equal(r.native.completion.state,'completed');assert.equal(r.native.observedAgents,0)
-    assert.equal(r.native.collaborationObserved,false);assert.equal(r.cleanup.confirmed,true)
-  }
+test('requested collaboration separates subagent evidence from Swarm invocation success',async()=>{
+  const sub=fixture('success'),sr=await runMachine({...sub.request,native:{version:1,mode:'subagents'}},sub.runtime)
+  assert.equal(sr.ok,false);assert.equal(sr.failure.category,'collaboration-not-observed')
+  assert.equal(sr.execution.outcome,'failed');assert.equal(sr.native.completion.state,'completed');assert.equal(sr.native.observedAgents,0)
+  assert.equal(sr.native.collaborationObserved,false);assert.equal(sr.cleanup.confirmed,true)
+  const f=fixture('success'),r=await runMachine({...f.request,native:{version:1,mode:'swarm'}},f.runtime)
+  assert.equal(r.ok,true);assert.equal(r.native.observedAgents,0);assert.equal(r.native.collaborationObserved,false)
+  assert.equal(r.native.completion.children,'unknown');assert.equal(r.native.completion.state,'completed')
 })
 
 test('observed total guard counts verifier and monitor, stops locally, and recovery never replays',async()=>{

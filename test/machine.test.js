@@ -40,7 +40,7 @@ test('subscription conflicts and settings drift never become successful',async()
     const f=fixture();writeFileSync(join(f.home,'.gemini/antigravity-cli/settings.json'),JSON.stringify(settings))
     const r=await runMachine(f.request,f.runtime);assert.equal(r.ok,false);assert.equal(r.execution.dispatch,'not-dispatched');assert.equal(existsSync(f.env.FIXTURE_INPUT),false)
   }
-  const f=fixture('drift'),r=await runMachine(f.request,f.runtime);assert.equal(r.ok,false);assert.match(r.failure.detail,/credits|settings/i)
+  const f=fixture('drift'),r=await runMachine(f.request,f.runtime);assert.equal(r.ok,false);assert.match(r.failure.detail,/credits|settings|cannot inspect/i)
 })
 test('protocol failure and soft denials cannot hide behind exit zero',async()=>{
   for(const scenario of ['wrong-model','truncated','duplicate','denied','waiting','exit-fail','quota','early-error']){

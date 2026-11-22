@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — repair release
+
+- Handle ACTIVE subagent metadata events that omit a conversation ID; retain only verifiable child identities and complete real explicit-subagent runs.
+- Accept successful Swarm slash-command invocations without inventing child metadata; report collaborationObserved:false and children:unknown instead of claiming child completion.
+- Clarify live evidence-only admission and record the 2026-11-21 agy 1.5.14 native, evidence-only and explicit-subagent smoke results.
+
 ## 0.2.0 — release candidate
 
 - Add the three exact Orchestrator model slugs with fixed empty effort and no native `--effort` override.
