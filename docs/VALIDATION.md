@@ -29,7 +29,7 @@ The test suite uses `test/fixtures/fake-agy.js`, an executable implementation of
 
 `scripts/test-package.js` prints exact tarball integrity and writes ignored `candidate.json` for a local acceptance run. 0.2.1 is published to npm and has a `v0.2.1` GitHub release; the tag release was produced through the configured trusted publisher. The live native, evidence-only, Orchestrator, explicit-subagent and Swarm checks are recorded below.
 
-## 0.2.0 follow-up, 2026-11-20
+## 0.2.1 follow-up, 2026-11-21
 
 The source suite passed **35/35** tests. `npm run check` also installed the real 0.2.0 tarball into a directory outside the checkout and passed public ESM, strict TypeScript, wrapper, supervisor, journal, evidence-only and Orchestrator/Swarm consumption. Fixture checks do not establish live behavior. On 2026-11-21, a live `agy` 1.5.14 native call and a live evidence-only call both returned a successful terminal result; a requested shell command was refused under the managed empty allowlist. Account entitlement, billing, Desktop acceptance and Orchestrator/Swarm account behavior remain separate.
 
