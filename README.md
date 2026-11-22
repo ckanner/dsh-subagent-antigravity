@@ -4,7 +4,7 @@
 
 Run Gemini tasks through the **official local `agy` CLI**, using its existing native account login. One supervised runner serves the Desktop task panel, the `subagent_antigravity` tool, and the public ESM machine API. It does not use ACP or call a separate model API.
 
-This is the **0.2.0 release candidate**. A live `agy` 1.5.14 native and evidence-only smoke passed on 2026-11-21; npm publication, desktop acceptance, and account-level Orchestrator/Swarm validation remain separate. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
+**0.2.0 is published on npm and recorded as the `v0.2.0` GitHub release.** A live `agy` 1.5.14 native and evidence-only smoke passed on 2026-11-21; desktop acceptance and account-level Orchestrator/Swarm validation remain separate. Offline protocol, process lifecycle, DSH contract and installed-package checks are reproducible below.
 
 ## Requirements and installation
 

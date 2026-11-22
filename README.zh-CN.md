@@ -4,7 +4,7 @@
 
 通过本机**官方 `agy` CLI** 使用 Gemini，沿用用户已有的官方账号登录。Desktop 任务面板、`subagent_antigravity` 工具和公开 ESM machine API 共用同一套监督 runner。没有 ACP，也没有独立付费 API 回退。
 
-当前是 **0.2.0 候选版**。2026-11-21 已完成 `agy` 1.5.14 的真实 native/evidence-only 冒烟；npm 发布、桌面验收和账号级 Orchestrator/Swarm 验收仍分别记录。实际检查范围见验收文档。
+**0.2.0 已发布到 npm，并记录为 `v0.2.0` GitHub Release。** 2026-11-21 已完成 `agy` 1.5.14 的真实 native/evidence-only 冒烟；桌面验收和账号级 Orchestrator/Swarm 验收仍分别记录。实际检查范围见验收文档。
 
 ## 安装前提
 
