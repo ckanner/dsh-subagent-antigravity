@@ -32,9 +32,10 @@ function harness(handler) {
 }
 const findButton=(renderer,text)=>renderer.root.findAllByType('button').find(button=>button.children.includes(text))
 
-test('standalone bundle contains the exact reusable ACP source',()=>{
+test('standalone desktop client stays settings-only while reusable ACP client remains exported separately',()=>{
   const bundled=readFileSync(new URL('../assets/client.js',import.meta.url),'utf8')
-  assert.ok(bundled.startsWith('// BEGIN SHARED ACP CLIENT\n'+source+'// END SHARED ACP CLIENT\n'))
+  assert.equal(bundled.includes('conversation.view'),false)
+  assert.ok(source.includes('createAntigravityAcpClient'))
 })
 
 test('ACP controls use owner-bound Remote, native options and permission IDs; unmount only detaches',async()=>{
