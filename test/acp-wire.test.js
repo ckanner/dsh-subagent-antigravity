@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { mkdtempSync, mkdirSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, realpathSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { randomUUID } from 'node:crypto'
@@ -12,7 +12,7 @@ import { openAcpTransport } from '../lib/acp/transport.js'
 
 const server = fileURLToPath(new URL('./fixtures/acp-server.mjs', import.meta.url))
 async function fixture(t, scenario) {
-  const root = mkdtempSync(join(tmpdir(), 'acp-wire-')), workspace = join(root, 'source'); mkdirSync(workspace)
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'acp-wire-'))), workspace = join(root, 'source'); mkdirSync(workspace)
   const runtime = { executable: '/verified/agy', version: '1.5.14', sha256: 'a'.repeat(64), platform: process.platform, architecture: process.arch, env: { ...process.env, ACP_TEST_SCENARIO: scenario } }
   const manager = new AcpSessions({ stateRoot: join(root, 'state'), getConfig: () => ({ transport: 'acp', disposeGraceMs: 200 }), services: {
     inspectRuntime: async () => runtime,

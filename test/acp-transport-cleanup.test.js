@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { setTimeout as delay } from 'node:timers/promises'
@@ -35,7 +35,7 @@ function processIsRunning(pid) {
 test('root exit does not skip owned-group cleanup, and uncertain cleanup retains the session lock', {
   skip: process.platform === 'win32',
 }, async t => {
-  const root = mkdtempSync(join(tmpdir(), 'acp-root-first-'))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'acp-root-first-')))
   const workspace = join(root, 'workspace'), stateRoot = join(root, 'state')
   mkdirSync(workspace)
   const childFile = join(root, 'child.cjs'), leaderFile = join(root, 'leader.cjs'), pidFile = join(root, 'child.pid')

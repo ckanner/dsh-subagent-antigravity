@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, rmSync, readFileSync, readdirSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, realpathSync, rmSync, readFileSync, readdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
@@ -10,7 +10,7 @@ import { AcpSessions } from '../lib/acp/sessions.js'
 const model = value => [{ id: 'model', category: 'model', type: 'select', name: 'Model', currentValue: value,
   options: [{ value: 'gemini-test', name: 'Gemini test' }, { value: 'gemini-other', name: 'Gemini other' }, { value: 'claude-test', name: 'Claude test' }] }]
 function fixture(t, options = {}) {
-  const root = mkdtempSync(join(tmpdir(), 'agy-acp-sessions-')), workspace = join(root, 'source')
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'agy-acp-sessions-'))), workspace = join(root, 'source')
   mkdirSync(workspace)
   const calls = [], transports = [], runtime = { executable: '/verified/agy', version: '1.5.14', sha256: 'a'.repeat(64), platform: 'linux', architecture: 'x64', env: {} }
   runtime.identity = { ...runtime }; delete runtime.identity.env
