@@ -16,6 +16,9 @@ test('valid stream persists receipts, authenticates model and exact resume bindi
   const f=fixture(),events=[]
   const receipt=await runMachine(f.request,{...f.runtime,onLifecycle:e=>events.push(e)})
   assert.equal(receipt.ok,true,JSON.stringify(receipt.failure));assert.equal(receipt.output[0].text,'done');assert.equal(receipt.usage.scope,'conversation');assert.equal(receipt.costUSD,null)
+  const cliCalls=readFileSync(f.env.FIXTURE_CALLS,'utf8').trim().split('\n').map(l=>JSON.parse(l))
+  const runCall=cliCalls.find(c=>c.args.includes('--input-format'))
+  assert.equal(runCall.args.includes('--mode'),false,'executionMode default must omit empty --mode flag')
   assert.deepEqual(events.map(e=>e.event),['dispatch-intent','dispatch-possible','terminal','cleanup-confirmed'])
   assert.equal(events[0].configuration,null)
   assert.equal(events[0].cleanupConfirmed,false)

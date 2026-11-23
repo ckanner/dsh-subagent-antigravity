@@ -12,7 +12,7 @@ export type AcpAction = { version: 2 } & (
   | { action: 'configure'; id: string; configId: string; value: string | boolean }
   | { action: 'login-submit'; input: string }
 )
-export interface AcpRuntimeIdentity { executable: string; version: string; sha256: string; platform: string; architecture: string }
+export interface AcpRuntimeIdentity { executable: string; version: string; sha256: string; binaryHashVerified: boolean; platform: string; architecture: string }
 export interface AcpSessionSnapshot {
   protocol: 2; transport: 'official-cli-acp'; id: string; owner: string;
   sourceCwd: string; cwd: string; branch: string; baseCommit: string; revision: number;
@@ -36,6 +36,6 @@ export class AcpSessions {
   stopOwner(owner: string): Promise<void>;
   dispose(): Promise<void>;
 }
-export function inspectAcpRuntime(options?: { command?: string; env?: Record<string, string | undefined>; cwd?: string; expectedIdentity?: AcpRuntimeIdentity }): Promise<AcpRuntimeIdentity & { env: Record<string, string>; identity: AcpRuntimeIdentity }>;
+export function inspectAcpRuntime(options?: { command?: string; env?: Record<string, string | undefined>; cwd?: string; expectedIdentity?: AcpRuntimeIdentity; strictBinaryHash?: boolean }): Promise<AcpRuntimeIdentity & { env: Record<string, string>; identity: AcpRuntimeIdentity }>;
 export const CLIENT_INFO: Readonly<{ name: string; title: string; version: string }>;
 export const CLIENT_CAPABILITIES: Readonly<Record<string, unknown>>;

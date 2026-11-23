@@ -304,3 +304,23 @@ test('native login and connection creation are mutually exclusive across manager
   const resumed = await second.action({ ...context, owner: 'another-owner' }, { version: 2, action: 'resume', id: result.id })
   assert.equal(resumed.status, 'ready')
 })
+
+test('canPrompt is re-checked after async preflight before dispatching a prompt', async t => {
+  const { manager, action, calls, transports, root } = fixture(t)
+  const session = await action('connect')
+  let entered, release
+  const ready = new Promise(resolve => { entered = resolve })
+  const gate = new Promise(resolve => { release = resolve })
+  const verify = manager.services.verifyWorkspace
+  manager.services.verifyWorkspace = async record => { entered(); await gate; return verify(record) }
+  const operationId = randomUUID()
+  const sending = action('prompt', { id: session.id, operationId, prompt: [{ type: 'text', text: 'race prompt' }] })
+  await ready
+  // Concurrent tool call arrives while preflight awaits workspace verification.
+  transports[0].callbacks.onUpdate({ sessionId: session.sessionId, update: { sessionUpdate: 'tool_call', toolCallId: 'bg-tool', title: 'Background work', status: 'in_progress' } })
+  release()
+  await assert.rejects(sending, { code: 'INVALID_REQUEST' })
+  assert.equal(calls.filter(call => call.method === 'session/prompt').length, 0)
+  const opFiles = readdirSync(join(root, 'state', 'sessions')).filter(name => name.includes(operationId))
+  assert.equal(opFiles.length, 0)
+})

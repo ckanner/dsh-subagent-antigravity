@@ -8,14 +8,14 @@ function createAntigravityAcpClient(require) {
     sessions:'会话', resume:'恢复会话', disconnect:'断开会话', stop:'停止工作', send:'发送', prompt:'给 Antigravity 的任务', source:'来源工作区', worktree:'独立工作目录', base:'创建时提交', branch:'分支', status:'会话状态', connection:'连接', root:'当前请求', known:'已报告工作', tools:'工具', permissions:'待授权', children:'原生成员', unknown:'未确认',
     permission:'Antigravity 请求授权', dismiss:'取消本次授权请求', config:'官方会话配置', unsupported:'此个人登录入口仅支持官方返回的 Gemini 模型', transcript:'对话', thought:'思考', user:'你', assistant:'Antigravity', plan:'计划', history:'显示的是截断后的本地记录，不代表完整原生历史。',
     detached:'根请求返回后，工具和原生后续工作仍可能继续。请以已报告状态判断。', uncertain:'发送结果尚未确认。保留原操作 ID 与附件字节，刷新会话核对；不会自动重发。', reconcile:'核对发送结果', empty:'先连接新的独立会话，或恢复一个已记录会话。', loading:'正在连接认证服务…', unavailable:'认证 ACP 服务不可用', noConfig:'官方 runtime 尚未返回可选择配置。', clean:'进程 / 会话清理', retained:'断开连接会保留 worktree 和记录。', transport:'当前入口',
-    images:'添加图片', imageHint:'可选择或粘贴 PNG、JPEG、WebP、GIF；每张不超过 8 MiB。', imageInvalid:'图片须为 PNG、JPEG、WebP 或 GIF，每张大于 0 且不超过 8 MiB。', imageReading:'正在读取图片…', imageUnsupported:'此 runtime 未声明支持图片输入。', imageRemove:'移除', promptLimit:'一次发送最多 16 个内容块，总大小不得超过 16 MiB。',
+    images:'添加图片', imageHint:'可选择或粘贴 PNG、JPEG、WebP、GIF；每张不超过 8 MiB。', imageInvalid:'图片须为 PNG、JPEG、WebP 或 GIF，每张大于 0 且不超过 8 MiB。', imageReading:'正在读取图片…', imageUnsupported:'此 runtime 未声明支持图片输入。', imageRemove:'移除', promptLimit:'一次发送最多 16 个内容块，总大小不得超过 16 MiB。', textLimit:'单段文本不得超过 1 MiB。',
   } : {
     title:'Antigravity', hint:'Uses the official CLI sign-in and agent. Each new session gets an isolated Git worktree from the current committed HEAD; uncommitted edits are not copied automatically. Switching views only detaches the UI.',
     new:'New isolated session', refresh:'Refresh', doctor:'Check CLI', login:'Sign in with Google', loginSubmit:'Submit official sign-in code', loginCancel:'Cancel sign-in', loginCode:'Code or callback URL from the official page', loginDone:'The login process exited successfully. Connect or resume a session to verify sign-in.', loginFailed:'Could not submit sign-in. Check the official flow; the input was cleared and will not be retried automatically.', openLogin:'Open official sign-in page',
     sessions:'Sessions', resume:'Resume session', disconnect:'Disconnect session', stop:'Stop work', send:'Send', prompt:'Task for Antigravity', source:'Source workspace', worktree:'Isolated working directory', base:'Starting commit', branch:'Branch', status:'Session state', connection:'Connection', root:'Current request', known:'Reported work', tools:'Tools', permissions:'Pending permissions', children:'Native members', unknown:'Unconfirmed',
     permission:'Antigravity requests permission', dismiss:'Cancel this permission request', config:'Official session configuration', unsupported:'This personal sign-in entry supports only Gemini models returned by the official runtime', transcript:'Conversation', thought:'Thought', user:'You', assistant:'Antigravity', plan:'Plan', history:'This local record is truncated and is not the complete native conversation history.',
     detached:'Tools and native follow-up work may continue after the root request returns. Follow the reported state.', uncertain:'The send outcome is unconfirmed. Its operation ID and attachment bytes are retained for reconciliation; no automatic replay will occur.', reconcile:'Check send outcome', empty:'Connect a new isolated session or resume a recorded session.', loading:'Connecting to the authenticated service…', unavailable:'Authenticated ACP service unavailable', noConfig:'The official runtime has not returned selectable configuration yet.', clean:'Process / session cleanup', retained:'Disconnecting preserves the worktree and session record.', transport:'Current transport',
-    images:'Add images', imageHint:'Choose or paste PNG, JPEG, WebP or GIF images, up to 8 MiB each.', imageInvalid:'Use PNG, JPEG, WebP or GIF images larger than 0 bytes and no more than 8 MiB each.', imageReading:'Reading images…', imageUnsupported:'This runtime has not advertised image input.', imageRemove:'Remove', promptLimit:'A send supports at most 16 content blocks and 16 MiB total.',
+    images:'Add images', imageHint:'Choose or paste PNG, JPEG, WebP or GIF images, up to 8 MiB each.', imageInvalid:'Use PNG, JPEG, WebP or GIF images larger than 0 bytes and no more than 8 MiB each.', imageReading:'Reading images…', imageUnsupported:'This runtime has not advertised image input.', imageRemove:'Remove', promptLimit:'A send supports at most 16 content blocks and 16 MiB total.', textLimit:'Prompt text must not exceed 1 MiB.',
   }
   const record = value => value !== null && typeof value === 'object' && !Array.isArray(value)
   const allowed = {
@@ -159,7 +159,14 @@ function createAntigravityAcpClient(require) {
         else applyRef.current(value)
         if(action==='connect'&&value.id)actions.set('acpSelectedId',value.id)
         return value
-      }catch(error){if(active.current===execute)setMessage(action==='login-submit'?t.loginFailed:errorText(error)+(action==='prompt'?' '+t.uncertain:''))}finally{flights.current.delete(flight);if(active.current===execute)setBusy([...flights.current].at(-1)?.action??'')}
+      }catch(error){
+        if(active.current===execute){
+          if(action==='prompt'&&error?.code==='INVALID_REQUEST'&&extra.id&&operationRef.current[extra.id]?.operationId===extra.operationId){
+            const next={...operationRef.current};delete next[extra.id];operationRef.current=next;actions.set('acpOperations',next)
+            setMessage(errorText(error))
+          }else setMessage(action==='login-submit'?t.loginFailed:errorText(error)+(action==='prompt'?' '+t.uncertain:''))
+        }
+      }finally{flights.current.delete(flight);if(active.current===execute)setBusy([...flights.current].at(-1)?.action??'')}
     }
     const addImages=async files=>{
       if(!imageEnabled||attachmentBusy.current||!files.length)return
@@ -177,7 +184,9 @@ function createAntigravityAcpClient(require) {
     const send=()=>{
       if(!snapshot?.canPrompt||(!draft.acpDraft?.trim()&&!attachments.length)||operationRef.current[snapshot.id]||flights.current.size||attachmentBusy.current)return
       if(attachments.length&&!imageEnabled){setMessage(t.imageUnsupported);return}
-      const prompt=[...(draft.acpDraft?.trim()?[{type:'text',text:draft.acpDraft}]:[]),...attachments.map(item=>({type:'image',mimeType:item.mimeType,data:item.data}))]
+      const text=draft.acpDraft??''
+      if(text.trim()&&(text.length>1024*1024||new TextEncoder().encode(text).length>1024*1024)){setMessage(t.textLimit);return}
+      const prompt=[...(text.trim()?[{type:'text',text}]:[]),...attachments.map(item=>({type:'image',mimeType:item.mimeType,data:item.data}))]
       if(prompt.length>16||new TextEncoder().encode(JSON.stringify(prompt)).length>16*1024*1024){setMessage(t.promptLimit);return}
       const operation={id:snapshot.id,operationId:crypto.randomUUID(),text:draft.acpDraft,prompt,attachments:attachments.map(({id,name,sha256,size})=>({id,name,sha256,size}))}
       operationRef.current={...operationRef.current,[operation.id]:operation};actions.set('acpOperations',operationRef.current)
@@ -270,7 +279,7 @@ function createAntigravityAcpClient(require) {
           if(disposed||!binding.active)throw new Error('This Antigravity view binding has ended')
           const reply=await call(id,parseInput(input))
           if(disposed||!binding.active)throw new Error('This Antigravity view binding has ended')
-          if(!reply?.ok)throw new Error(reply?.error?.message??t.unavailable)
+          if(!reply?.ok){const err=new Error(reply?.error?.message??t.unavailable);if(reply?.error?.code)err.code=reply.error.code;throw err}
           return parseResult(reply.value)
         }}
         bindings.set(actions,binding);bindingSet.add(binding);return binding

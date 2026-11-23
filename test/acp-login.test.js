@@ -31,7 +31,7 @@ test('the production login constructor cannot launch a fixture posing as a verif
   const f = await setup(t)
   const login = new AcpLogin({ runtime: f.runtime, cwd: f.cwd })
   assert.equal((await login.start()).state, 'failed')
-  assert.match(login.snapshot().message, /not the verified official/)
+  assert.match(login.snapshot().message, /changed|not the verified official/)
 })
 
 test('the same official invocation accepts a checked callback, exposing no submitted code or raw output', async t => {

@@ -217,3 +217,37 @@ test('login errors clear the password field and failed cleanup retains cancellat
   assert.equal(findButton(renderer,'Sign in with Google').props.disabled,false)
   await act(async()=>renderer.unmount())
 })
+
+test('oversize text is rejected before recording an operation and pre-dispatch INVALID_REQUEST clears operation lock',async()=>{
+  const snapshot=base()
+  let shouldRejectInvalid=true
+  const f=harness(async(_owner,input)=>{
+    if(input.action==='defaults')return {protocol:2,transport:'acp'}
+    if(input.action==='status'&&!input.id)return {protocol:2,sessions:[snapshot]}
+    if(input.action==='prompt'){
+      if(shouldRejectInvalid){const err=new Error('Wait for the outstanding native work');err.code='INVALID_REQUEST';throw err}
+      return {...snapshot,revision:2,prompt:{operationId:input.operationId,state:'pending'}}
+    }
+    return snapshot
+  })
+  f.store.actions.set('acpSelectedId',snapshot.id)
+  let renderer
+  await act(async()=>{renderer=TestRenderer.create(React.createElement(f.App))})
+  await act(async()=>{renderer.root.findByType('textarea').props.onChange({target:{value:'a'.repeat(1024*1024+1)}})})
+  await act(async()=>{await findButton(renderer,'Send').props.onClick()})
+  assert.equal(f.calls.filter(call=>call.input.action==='prompt').length,0,'oversize text must never dispatch or lock the session')
+  assert.equal(Object.keys(f.store.getSnapshot().acpOperations).length,0)
+  assert.equal(findButton(renderer,'Send').props.disabled,false)
+
+  await act(async()=>{renderer.root.findByType('textarea').props.onChange({target:{value:'valid prompt'}})})
+  await act(async()=>{await findButton(renderer,'Send').props.onClick()})
+  assert.equal(f.calls.filter(call=>call.input.action==='prompt').length,1)
+  assert.equal(Object.keys(f.store.getSnapshot().acpOperations).length,0,'confirmed pre-dispatch INVALID_REQUEST must not leave Send permanently disabled')
+  assert.equal(findButton(renderer,'Send').props.disabled,false)
+
+  shouldRejectInvalid=false
+  await act(async()=>{await findButton(renderer,'Send').props.onClick()})
+  assert.equal(f.calls.filter(call=>call.input.action==='prompt').length,2)
+  assert.equal(f.store.getSnapshot().acpDraft,'')
+  await act(async()=>renderer.unmount())
+})

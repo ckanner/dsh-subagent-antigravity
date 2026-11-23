@@ -21,10 +21,14 @@ function setup(t, extra = {}) {
   return { root, bin, cwd, executable, marker, env, inspect, artifact }
 }
 
-test('the production inspector rejects a version-spoofing wrapper before executing it', async t => {
+test('strictBinaryHash rejects an unverified binary before executing it, while default accepts official semver >= 1.5.13', async t => {
   const f = setup(t)
-  await assert.rejects(inspectAcpRuntime({ command: 'agy', env: f.env, cwd: f.cwd }), { code: 'ACP_UNVERIFIED_BINARY' })
+  await assert.rejects(inspectAcpRuntime({ command: 'agy', env: f.env, cwd: f.cwd, strictBinaryHash: true }), { code: 'ACP_UNVERIFIED_BINARY' })
   assert.equal(existsSync(f.marker), false)
+  const accepted = await inspectAcpRuntime({ command: 'agy', env: { ...f.env, FIXTURE_VERSION: '1.5.15' }, cwd: f.cwd })
+  assert.equal(accepted.version, '1.5.15')
+  assert.equal(accepted.binaryHashVerified, false)
+  assert.equal(accepted.identity.binaryHashVerified, false)
 })
 
 test('preflight resolves one physical executable, filters routing and freezes native identity without headless flags', async t => {
@@ -57,13 +61,19 @@ test('account-only controls apply while native permission/model choices are not 
   await assert.rejects(f.inspect({ env: { ...f.env, AGY_ADC_AUTH: 'true' }, cwd: f.cwd }), /ADC/)
 })
 
-test('an exact executable digest and truthful --version/help are all required', async t => {
+test('truthful --version >= 1.5.13, acp --help, and optional strictBinaryHash are enforced', async t => {
   const f = setup(t)
-  await assert.rejects(f.inspect({ env: { ...f.env, FIXTURE_VERSION: '1.5.13' }, cwd: f.cwd }), { code: 'ACP_VERSION_NOT_CONFIRMED' })
+  await assert.rejects(f.inspect({ env: { ...f.env, FIXTURE_VERSION: '1.5.12' }, cwd: f.cwd }), { code: 'ACP_VERSION_NOT_CONFIRMED' })
   await assert.rejects(f.inspect({ env: { ...f.env, FIXTURE_VERSION: 'wrapper 1.5.14' }, cwd: f.cwd }), { code: 'ACP_VERSION_NOT_CONFIRMED' })
   await assert.rejects(f.inspect({ env: { ...f.env, FIXTURE_HELP_MODE: 'invalid' }, cwd: f.cwd }), { code: 'ACP_CAPABILITIES_NOT_CONFIRMED' })
+  const exact = await f.inspect({ env: f.env, cwd: f.cwd })
+  assert.equal(exact.binaryHashVerified, true)
+  const newer = await f.inspect({ env: { ...f.env, FIXTURE_VERSION: '1.5.16' }, cwd: f.cwd })
+  assert.equal(newer.version, '1.5.16')
   writeFileSync(f.executable, Buffer.concat([fixture, Buffer.from('\n// changed\n')]))
-  await assert.rejects(f.inspect({ env: f.env, cwd: f.cwd }), { code: 'ACP_UNVERIFIED_BINARY' })
+  await assert.rejects(f.inspect({ env: f.env, cwd: f.cwd, strictBinaryHash: true }), { code: 'ACP_UNVERIFIED_BINARY' })
+  const upgraded = await f.inspect({ env: { ...f.env, FIXTURE_VERSION: '1.5.16' }, cwd: f.cwd })
+  assert.equal(upgraded.binaryHashVerified, false)
 })
 
 test('byte or native-setting drift during preflight is rejected', async t => {
