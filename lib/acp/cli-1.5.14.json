@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "version": "1.5.14",
+  "verifiedAt": "2026-11-23",
+  "releaseUrl": "https://github.com/google-antigravity/antigravity-cli/releases/tag/1.5.14",
+  "artifacts": [
+    {
+      "platform": "linux",
+      "architecture": "x64",
+      "version": "1.5.14",
+      "manifestUrl": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json",
+      "archiveUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/linux-x64/cli_linux_x64.tar.gz",
+      "releaseAssetUrl": "https://github.com/google-antigravity/antigravity-cli/releases/download/1.5.14/agy_cli_linux_x64.tar.gz",
+      "archiveSha256": "d58386322d2073e96b33f7cc32b4e9ae2db6228f58440369725967b2de48c7b5",
+      "archiveSha512": "83311d3f354567612dc16c1ae2ea9b503d6f6833aa4e138d39aa229da3f3bb99b0e4d7cca0bce4796b0060d6a51d8113eb7449ed5dc0e7900bf217107ea5bff9",
+      "archiveBytes": 101195950,
+      "archiveMember": "antigravity",
+      "binarySha256": "37873b8062391b6202a3d3199ec012abc9e53aab720d26cd65699441497d8c94",
+      "binaryBytes": 273240776,
+      "validation": "archive-and-binary-hashes; version/help/unauthenticated-initialize"
+    },
+    {
+      "platform": "linux",
+      "architecture": "arm64",
+      "version": "1.5.14",
+      "manifestUrl": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_arm64.json",
+      "archiveUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/linux-arm/cli_linux_arm64.tar.gz",
+      "releaseAssetUrl": "https://github.com/google-antigravity/antigravity-cli/releases/download/1.5.14/agy_cli_linux_arm64.tar.gz",
+      "archiveSha256": "e5f69a3123fac66974b303d9a201f381a0fb32b3ef869d9139da85d5caf67a2a",
+      "archiveSha512": "c9b29bba475f63a1a80161ae93ba72b221c7a586d9851e4d0061546704bab66d6b2760b25d716d191724fc7564f3246456ee151e28aa37af48dbcd72bdc6c463",
+      "archiveBytes": 92116379,
+      "archiveMember": "antigravity",
+      "binarySha256": "702b888abddc7d482ee30592fa153cda5785afae3188179d38b511b6ec360286",
+      "binaryBytes": 256070320,
+      "validation": "archive-and-binary-hashes; no native execution on this platform"
+    },
+    {
+      "platform": "darwin",
+      "architecture": "x64",
+      "version": "1.5.14",
+      "manifestUrl": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/darwin_amd64.json",
+      "archiveUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/darwin-x64/cli_mac_x64.tar.gz",
+      "releaseAssetUrl": "https://github.com/google-antigravity/antigravity-cli/releases/download/1.5.14/agy_cli_mac_x64.tar.gz",
+      "archiveSha256": "c142141141cbaa93f4e46904b76341e349f3f2b78445f877f39468dfe60dda1e",
+      "archiveSha512": "1b6a1fc6dbe46ba6d9d0405d1b6095189f35ebfc4c3c33ceb1fd1b6d0c9fd702b52ac10b64b8b52aed0d8d71ae02c5df3cffd5e3e3d37549c2daffcce2a853c7",
+      "archiveBytes": 91613810,
+      "archiveMember": "antigravity",
+      "binarySha256": "5f3832bb8e391820bb895a08d1f837bb9e1714d48cd5ba31edf9286af6e9ea21",
+      "binaryBytes": 238884352,
+      "validation": "archive-and-binary-hashes; no native execution on this platform"
+    },
+    {
+      "platform": "darwin",
+      "architecture": "arm64",
+      "version": "1.5.14",
+      "manifestUrl": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/darwin_arm64.json",
+      "archiveUrl": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.14-5302690847260672/darwin-arm/cli_mac_arm64.tar.gz",
+      "releaseAssetUrl": "https://github.com/google-antigravity/antigravity-cli/releases/download/1.5.14/agy_cli_mac_arm64.tar.gz",
+      "archiveSha256": "b01bdd4591e13ddfcb0e049bea74ae9f83e80829adcf64aaa58f5bfb1a425a54",
+      "archiveSha512": "26830fd46bfb9200d073cf3e71bf94b707552557b4380ec01afd6e99f3a2b030e65422dab1867f77318078692defc859a7547d17ec4b0b1e9369f13c9c3caea6",
+      "archiveBytes": 85943943,
+      "archiveMember": "antigravity",
+      "binarySha256": "e8c2959bf4744580d0e5b8f938ec2dc3918a942b620a6262e53856400f14e5fb",
+      "binaryBytes": 229152672,
+      "validation": "archive-and-binary-hashes; no native execution on this platform"
+    }
+  ],
+  "minimumVersionRationale": "1.5.13 fixed ACP workspace cwd and embedded prompt resources. Only these exact 1.5.14 artifact bytes are admitted."
+}

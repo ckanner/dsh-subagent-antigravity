@@ -30,8 +30,12 @@ export interface NativeReceipt {
   children:NativeChild[];aggregateUsageStatus:'unknown';artifacts:[];
   managedAgent?:{name:string;path:string;digest:string;ownerRunId:string;cleanup:'confirmed'|'unknown'};
 }
+export interface MachineImage {
+  mimeType:'image/png'|'image/jpeg'|'image/webp'|'image/gif';
+  data:string;
+}
 export interface MachineRequest {
-  protocol:1; requestId:string; cwd:string; prompt:string; command?:string;
+  protocol:1; requestId:string; transport?:'headless'|'acp'; cwd:string; prompt:string; images?:MachineImage[]; command?:string;
   /** Exact agy models slug, including the effort suffix for adjustable models. */
   model:string;
   /** Required for adjustable models. Fixed Orchestrator models accept empty or omitted effort; normalized to ''. */
@@ -69,7 +73,7 @@ export interface MachineReceipt {
   cleanup:{confirmed:boolean;method:'not-started'|'process-group'};
   providerWork:{state:'not-dispatched'|'completed'|'failed'|'unknown';querySupported:false;cancelSupported:false;replaySafe:boolean};
   session:{mode:'new'|'resume';id:string|null;resumed:boolean;resumable:boolean;name:string|null;nativeNameStatus:'unknown'};
-  configuration:{source:'cli-init'|null;observed:{cwd:string|null;model:string|null;permissionMode:string|null;agent:string|null;tools:string[]|null;effort:null;executionMode:null;sandbox:null;cliVersion:string|null}|null;matched:boolean;fingerprint:string|null};
+  configuration:{source:'cli-init'|'acp-init'|null;observed:{cwd:string|null;model:string|null;permissionMode:string|null;agent:string|null;tools:string[]|null;effort:string|null;executionMode:string|null;sandbox:boolean|null;cliVersion:string|null}|null;matched:boolean;fingerprint:string|null};
   subscription:{mode:'subscription-only';status:'verified-local-controls'|'unknown';authentication:'native-account-unverified';creditsFallback:false;extraBilling:'unknown';configFingerprint:string|null};
   output:Array<{type:'text';text:string}>;structured?:unknown;
   usage:{status:'complete'|'partial'|'unknown';scope:'conversation'|'unknown';inputTokens:number|null;outputTokens:number|null;thinkingTokens:number|null;cacheReadTokens:number|null;cacheCreationTokens:null;totalTokens:number|null};

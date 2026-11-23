@@ -9,7 +9,7 @@ import { resolveConfig,apply } from '../lib/index.js'
 import { assertSupportedJsonSchema } from '@deepseek-ai/dsh-tools'
 import { jsonSchemaToTs,renderToolsSdk } from '@deepseek-ai/dsh-tool-executor-ptc'
 
-function fixture(){const home=realpathSync(mkdtempSync(join(tmpdir(),'agy-desktop-'))),workspace=join(home,'work');mkdirSync(workspace);return {home,context:{owner:'desktop-session',workspace},env:{PATH:process.env.PATH,HOME:home},config:resolveConfig({command:resolve('test/fixtures/fake-agy.js'),disposeGraceMs:50})}}
+function fixture(){const home=realpathSync(mkdtempSync(join(tmpdir(),'agy-desktop-'))),workspace=join(home,'work');mkdirSync(workspace);return {home,context:{owner:'desktop-session',workspace},env:{PATH:process.env.PATH,HOME:home},config:resolveConfig({transport:'headless',command:resolve('test/fixtures/fake-agy.js'),disposeGraceMs:50})}}
 test('manual actions use the same runner, bind ownership, and make duplicate start idempotent',async()=>{
   const f=fixture(),tasks=new DesktopTasks({getConfig:()=>f.config,env:f.env}),id=randomUUID(),action={version:1,action:'start',invocationId:id,prompt:'task'}
   try{

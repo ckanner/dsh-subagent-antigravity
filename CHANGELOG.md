@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0 — release candidate, unpublished
+
+- Make official, unmodified `agy acp` the default desktop transport for direct human interaction. Keep version-1 task delegation and Agent/PTC tools behind explicit `transport: "headless"`; retain the independently selected legacy machine API.
+
+- Admit only exact official CLI 1.5.14 executable bytes for macOS/Linux on x64/arm64. Record official archive and extracted binary hashes, check version/ACP help and runtime/profile drift, and set `AGY_CLI_DISABLE_AUTO_UPDATE=true`. No automatic installation, fallback or credential migration.
+
+- Add the official `acp --login` helper with checked Google URL/callback state, stdin-only authorization-code handling, bounded output and owned-process cancellation. Successful helper exit requires a separate connection to verify authentication; login and connection leases coordinate managed use of the native profile.
+
+- Create a committed-HEAD Git worktree and branch for each new session, preserve user work after disconnect, and verify exact owner/worktree/runtime identity on resume. Keep ACP records separate from Flywheel's Go-owned state.
+
+- Use the authenticated DSH Remote for prompts, permissions, configuration and login. Expose safe control-only slash actions; never send host system-prompt overrides/appends, Preset/PTC definitions, a managed custom agent or a host filesystem/terminal tool bridge.
+
+- Retain a live ACP connection across turns, exact typed prompt content and operation IDs, native configuration/permission choices, and tool/child events after a root response. Unknown results never trigger prompt replay; unconfirmed session/process cleanup keeps the ownership lock.
+
+- Add capability-gated image-byte input, original attachment hashes and bounded display history. Export the public `./acp` API and the shared desktop client source.
+
+- Add runtime/login, real stdio/process-group, worktree, host/Remote and React regression coverage. Record four-platform artifact verification and the unauthenticated Linux x64 initialization probe. Real personal login, model inference, image delivery and native detached-work cleanup remain separate acceptance gates; previous headless live evidence does not establish them.
+
+中文：0.3.0 为尚未发布的候选版本，默认以官方原版 `agy acp` 提供人直接操作的交互会话；旧面板、version-1 命令和 Agent/PTC 委派需要显式 `transport: "headless"`，machine API 仍由调用方独立选择。ACP 仅准入四平台精确 1.5.14 程序摘要，并为本插件持有的进程设置官方禁用自动更新环境变量，原生登录由同程序 `acp --login` 处理，登录完成后需另行连接验证。每个新会话建立独立 worktree；恢复核对 owner、目录、运行时身份。鉴权 Remote 承载 prompt、原生权限、配置和登录，不注入宿主 system prompt／append、Preset/PTC、受管 agent 或工具桥。连接跨轮次保留，接收根请求返回后的原生活动；未知结果不重放，清理未知不释放锁。加入按能力发送图片字节、附件摘要和公开 ACP 接口。离线回归、四平台文件摘要和 Linux x64 未认证 initialize 已分别记录；真实个人登录、推理、图片送达及原生后台清理仍待验收，旧 headless 冒烟不替代这些证据。
+
 ## 0.2.1 — repair release
 
 - Handle ACTIVE subagent metadata events that omit a conversation ID; retain only verifiable child identities and complete real explicit-subagent runs.

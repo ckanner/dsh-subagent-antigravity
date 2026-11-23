@@ -1,17 +1,20 @@
 # dsh-subagent-antigravity
 
-[English](README.md) · [机器接口](docs/MACHINE.zh-CN.md) · [验收与发布](docs/VALIDATION.md)
+[English](README.md) · [交互式 ACP](docs/ACP.zh-CN.md) · [旧机器接口](docs/MACHINE.zh-CN.md) · [验收与发布](docs/VALIDATION.md)
 
-通过本机**官方 `agy` CLI** 使用 Gemini，沿用用户已有的官方账号登录。Desktop 任务面板、`subagent_antigravity` 工具和公开 ESM machine API 共用同一套监督 runner。没有 ACP，也没有独立付费 API 回退。
+在 DSH 和 Flywheel 中，通过**官方原版 `agy acp`** 进行个人交互式开发。**0.3.0 默认使用 `transport: "acp"`**：用户直接向官方 Antigravity agent 发送消息，官方程序管理原生登录、模型推理、工具、权限和执行循环。每个新会话使用独立 Git worktree，不调用 DSH 父模型。
 
-**0.2.1 已发布到 npm，并记录为 `v0.2.1` GitHub Release。** 2026-11-21 已完成 `agy` 1.5.14 的真实 native、evidence-only、Orchestrator、显式子智能体和 Swarm 冒烟；桌面验收及账号级账单/权益仍分别记录。实际检查范围见验收文档。
+**0.3.0 是尚未发布的候选版本。** 请构建并安装精确的本地 tarball 验收。**0.2.1 仍是已发布的 npm / `v0.2.1` GitHub Release**；2026-11-21 的真实 `agy` 1.5.14 native、evidence-only、Orchestrator、显式子智能体和 Swarm 检查属于旧 headless 路径，不能充当 ACP 登录、推理、图片送达或原生后台清理的验收。
+
+ACP 客户端不覆盖或追加系统提示词，不注入受管 custom agent、Preset、PTC 工具定义或宿主工具桥接。官方运行时仍可加载用户自己的原生 rules。旧 headless runner 和 machine API 仅保留给显式选择该接口的调用方；新增 ACP 不为个人账号的自动化用途建立许可依据。具体见 [ACP 架构与边界](docs/ACP.zh-CN.md)。
 
 ## 安装前提
 
-- macOS/Linux、Node.js 22.18+。本版使用 POSIX 进程组；Windows 明确拒绝执行。
-- 用户自行安装官方 `agy` 1.5.7+ 并登录；Orchestrator 和显式子智能体/Swarm 要求 1.5.12+。插件不下载、更新 CLI，不复制凭据，也不实现登录代理。
-- DSH 具有公开 commands、workingDirectory、会话视图/设置插槽和 Agent tools；后台委派还需要 jobs。已用发布版 `0.2.2-rc.3` 的工具 schema/PTC 契约检查，并在加载时核验所需能力。
-- 原生账号认证；不启用 API/ADC/GCP/custom model 路由；官方 CLI 中 AI credits 自动回退关闭。
+- macOS／Linux、x64 或 arm64、Node.js 22.18+。进程监督使用 POSIX 进程组，Windows 明确拒绝执行。
+- 用户从[官方 release](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.5.14) 安装**精确的 CLI 1.5.14**。ACP 只接受[来源记录](lib/acp/cli-1.5.14.json)中的四个平台可执行文件摘要，不接受仅输出相同版本号的其他二进制或包装脚本。未准入的升级会被拒绝；插件持有的 CLI 进程设置 `AGY_CLI_DISABLE_AUTO_UPDATE=true`。插件不下载或替换 CLI。
+- 当前目录属于已有至少一次提交的 Git 仓库。新 ACP worktree 从当前已提交 HEAD 创建，不复制未提交改动。
+- DSH 具有公开 commands、workingDirectory、鉴权 Remotes、会话视图／设置插槽和 Agent 生命周期服务。已发布 `0.2.2-rc.3` 的 schema/PTC 契约仍有测试，加载时检查所需宿主能力；Agent tools 和 jobs 仅用于显式旧委派入口。
+- 使用原生个人账号路由，不启用 ADC／GCP／custom API model，官方 CLI 的 AI credits 回退关闭。需要时通过官方 helper 登录；插件不创建自己的 OAuth client，也不迁移凭据。见[订阅策略](#订阅策略与未知状态)。
 
 在仓库中构建并检查候选包：
 
@@ -20,17 +23,53 @@ npm ci --ignore-scripts
 npm run check
 ```
 
-`test:package` 输出真实 `.tgz` 及 integrity。先在临时 DSH profile 验收：
+`npm run test:package` 输出精确 `.tgz` 及 integrity。先将该产物安装到临时 DSH profile 验收：
 
 ```sh
-dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.2.1.tgz
+dsh plugin --profile <profile> add /absolute/path/ckanner-dsh-subagent-antigravity-0.3.0.tgz
 ```
 
-只有该版本正式发布后，才按 npm 包名安装。包没有安装脚本，也不在安装或打开设置时偷偷调用模型。
+只有精确版本正式发布后，才按 npm 包名安装；不承诺 npm `latest` 已包含本候选。包没有安装脚本，也不会自动运行推理测试。bundle 新增一个默认使用 ACP 的 `antigravity` 插件行；它是外部 agent 客户端，无需注册为传统 DSH LLM provider。
 
-bundle 新增一个 `antigravity` 插件行。Agent 委派还需要 preset **显式允许 `subagent_antigravity`**；插件的 `presets` 是第二层范围，不替代 preset 工具注册。无需将它注册成传统 LLM provider，原生 CLI 已拥有完整 Agent 工具循环。
+## 在 DSH 中使用（默认 ACP）
 
-## 在 DSH 中使用
+在目标 Git 仓库的 DSH 会话中打开 **Antigravity**。先点击**检查 CLI**，核对精确运行时及本地账号路由控制，再**新建独立会话**。页面展示源目录、新 worktree、分支和起始提交。环境检查不发送模型 prompt，也不能证明账户权益。
+
+需要认证时，点击**官方 Google 登录**。插件以同一个已核验程序运行 `acp --login`，展示其官方 Google 登录 URL，并通过密码输入框接收返回的 code 或官方 callback URL。该内容只写入 helper 的 stdin，不进入命令、会话历史或 ACP 持久记录。helper 正常退出后，需主动连接或恢复会话来验证认证；退出成功不等于模型请求已完成。
+
+从原生会话实际返回的选项中选择 Gemini 模型及其他配置，再发送消息。页面显示原生文字、思考、工具、权限请求、计划及已报告成员活动；权限选项由官方 agent 提供。运行时声明图片能力后，可以选择或粘贴 PNG、JPEG、WebP、GIF，客户端发送有界图片字节，不将路径文字冒充图片。真实账号的图片送达仍待验收。
+
+连接跨轮次保持，切换视图只取消显示订阅。**停止工作**发送原生取消；**断开会话**请求原生 close 并停止本插件持有的进程组，保留 worktree 和分支供审查、整合。断开不等于退出登录。根请求返回不证明所有工具或成员已结束，已知未完成工作会阻止下一轮。结果或清理未知时保留原记录和锁，不自动重放。
+
+**恢复会话**核对相同 worktree、owner、原生 session 和精确运行时身份；新会话使用新 worktree。旧模型、effort、协作、权限与执行默认配置不注入 ACP。插件也会防止自己的受管连接与原生登录互相竞争；用户单独启动的 CLI 不受此协调控制。
+
+slash command 提供入口说明及少量 version-2 控制动作；prompt、图片、配置、权限回复和登录响应均留在鉴权页面：
+
+```text
+/antigravity
+/antigravity {"version":2,"action":"doctor"}
+/antigravity {"version":2,"action":"connect"}
+/antigravity {"version":2,"action":"list"}
+/antigravity {"version":2,"action":"status","id":"<返回的精确记录 UUID>"}
+/antigravity {"version":2,"action":"cancel","id":"<返回的精确记录 UUID>"}
+```
+
+worktree 归属、精确恢复、原生权限、生命周期证据、图片限制和公开 `./acp` API 见[交互式 ACP](docs/ACP.zh-CN.md)。
+
+## 显式使用旧 headless
+
+以下任务面板、Agent/PTC、协作、evidence-only 和 machine 章节描述保留的 **stream-json headless** 实现。在 DSH 插件中，必须显式设置 `transport: "headless"`，才启用旧面板、version-1 命令和 `subagent_antigravity` 工具：
+
+```yaml
+transport: headless
+command: agy
+```
+
+Agent 委派还要求所选 preset **显式注册 `subagent_antigravity`**；插件 `presets` 是第二层 allowlist。公开 `./machine` import 和 `antigravity-machine` 包装命令本身就是调用方独立选择的 headless 接口，不经过 ACP，也不新增 transport 请求字段。保留这些接口和历史测试，不代表个人原生登录授权无人值守或父 Agent 自动化。
+
+旧 runner 仍以官方 `agy` 1.5.7+ 为基线，Orchestrator 和显式子智能体／Swarm 要求 1.5.12+。这些范围只适用于旧路径，不放宽 ACP 对精确 1.5.14 可执行文件的准入。
+
+### 旧任务面板
 
 打开会话中的 **Antigravity** 视图，填写完整任务、名称和工作目录，选择模型、原生协作模式及权限后点击开始。普通模型可调整思考等级，Orchestrator 显示“固定（由模型决定）”。按钮通过公开 command 接口直接启动 CLI，**不会调用父模型**。切换视图不停止任务；刷新、查看结果、停止均在同一面板完成。关闭插件会取消它仍拥有的任务。
 
@@ -51,7 +90,7 @@ bundle 新增一个 `antigravity` 插件行。Agent 委派还需要 preset **显
 
 另外提供 `status`、`doctor`、`defaults`。手工任务保存在插件自己的 owner 绑定存储中，不伪造一个 Agent job。
 
-## 工具、PTC 和后台任务
+## 工具、PTC 和后台任务（仅 headless）
 
 ```js
 subagent_antigravity({
@@ -67,7 +106,7 @@ subagent_antigravity({
 
 只在允许的 committed preset 中注册，执行时重新检查，包括 preset 切换。输入/输出 schema 经过真实 DSH 发布包的校验器与 PTC 类型生成检查。
 
-## Orchestrator、原生子智能体与 Swarm
+## Orchestrator、原生子智能体与 Swarm（仅 headless）
 
 模型选择与协作模式是独立配置。[官方模型指南](https://antigravity.google/docs/models)将 Orchestrator 定义为同一智能体内部的规划/实施模型交接；[Swarm](https://antigravity.google/docs/swarm/)才显式请求多成员并行协作。只选 Orchestrator 不代表已经启动蜂群。
 
@@ -102,7 +141,7 @@ subagent_antigravity({
 
 完成范围为**当前 CLI invocation**。取消只监督本调用拥有的进程组；恢复只读原 journal，不进行全账号子任务查询或取消。适合已能划分独立子任务的工作；外层流程要求独立正式 Review 时仍要另起 Reviewer，本轮原生 verifier 仅作为同一根调用内的证据。
 
-## 机器接口和会话
+## 机器接口和会话（旧 headless）
 
 `@ckanner/dsh-subagent-antigravity/machine` 导出协议/能力常量、`parseMachineRequest`、`runMachine`、`recoverMachine`、`doctor` 与 TypeScript 类型。完整示例和字段见 [机器契约](docs/MACHINE.zh-CN.md)。Flywheel 不需要创建 DSH 父 Agent。
 
@@ -112,7 +151,7 @@ subagent_antigravity({
 
 `antigravity-machine --capabilities / --doctor / --json / --recover` 是本插件包装命令，**不是原生 `agy` 参数**。除 capabilities 外从 stdin 读取 JSON，stdout 只输出一份 JSON envelope。
 
-## 只分析给定证据
+## 只分析给定证据（仅 headless）
 
 `toolPolicy:"evidence-only"` 在工作区创建唯一、归本调用所有的 custom agent，设置 `tools: []`、`mcpServers: []`、`subagent:false`、`commandExecutionPolicy:off`，通过官方 `--agent` 选择。**发送 prompt 前**，必须从真实 init 看到同一个 agent 和工具目录。该目录是 CLI 注册表，可能非空；真正的限制是受管 agent 的 `tools: []` allowlist，任何工具或子 Agent step 都会使本次调用失败。无 init、agent 不匹配或缺少目录均拒绝，不写入 prompt。
 
@@ -124,11 +163,13 @@ subagent_antigravity({
 
 ## 订阅策略与未知状态
 
-准入证据是**本地计费路由控制**：拒绝 API provider、ADC、GCP、自定义 API model，过滤 API key/endpoint 环境，要求官方 `useG1Credits:false`（文档默认值），并检查派发前后配置漂移。认证或额度失败不切换到付费 API/credits。
+两条路径的准入证据都是**本地计费路由控制**，不证明商业账户权益：拒绝 API provider、ADC、GCP、自定义 API model，过滤 API key/endpoint 环境，要求官方 `useG1Credits:false`（文档默认值）。ACP 在连接、恢复、prompt、登录预检时重查运行时／profile 身份；旧 runner 另外在 receipt 中记录派发前后的配置漂移检查。认证或额度失败均不切换到付费 API／credits。
 
 依据：[官方认证](https://antigravity.google/docs/install/)、[CLI 参数与配置](https://antigravity.google/docs/cli/reference/)、[AI credits](https://antigravity.google/docs/cli/commands/credits)。官方把 useG1Credits 定义为套餐额度耗尽后改用 credits；插件不会启用或修改它。
 
-通过后 receipt 写 `verified-local-controls`，不会冒充已核验商业权益。原生账号权益、套餐余额、第三方工具计费和实际额外账单没有可靠原生机器证据时仍为 unknown。模型目录不等于余额；token 统计不等于套餐剩余量。金额缺失写 `null`，不写成零元。
+旧 headless 检查通过后 receipt 写 `verified-local-controls`，不会冒充已核验商业权益。原生账号权益、套餐余额、第三方工具计费和实际额外账单没有可靠原生机器证据时仍为 unknown。模型目录不等于余额；token 统计不等于套餐剩余量。金额缺失写 `null`，不写成零元。
+
+## 旧 headless 的完成与输入边界
 
 成功还必须有无非空 `finished_reason` 的正常原生 SUCCESS 终态、可观测身份/模型/目录一致、schema 有效及本地清理确认；显式协作还要求已观察成员。exit 0、WAITING/RUNNING、soft-denied、半截输出不能成功。effort、executionMode、sandbox 没有原生回显时保持 unknown。`--dangerously-skip-permissions` 不等于沙箱关闭或任意路径可写；`--sandbox` 也可能在不支持机器上无效。
 
