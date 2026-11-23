@@ -8,8 +8,8 @@ import TestRenderer,{act} from 'react-test-renderer'
 
 test('public client launches a direct owner-bound command, loads defaults without inference, and saves revisioned settings',async()=>{
   const slots=[],calls=[];let module
-  vm.runInNewContext(readFileSync(new URL('../assets/client.js',import.meta.url),'utf8'),{window:{__ModuleLoader__:{load:entry=>{module=entry.factory(name=>{assert.equal(name,'react');return React})}}},navigator:{language:'en'},crypto:webcrypto,console})
-  const ctx={slots:{inject:(_name,fn)=>fn(),register:(definition,component)=>{slots.push({definition,component})}},remote:{commands:{execute:async(session,command,attachments)=>{
+  vm.runInNewContext(readFileSync(new URL('../assets/client.js',import.meta.url),'utf8'),{window:{__ModuleLoader__:{load:entry=>{module=entry.factory(name=>{assert.equal(name,'react');return React})}}},navigator:{language:'en'},crypto:webcrypto,console,URL,setInterval,clearInterval})
+  const ctx={on(){},inject:(_names,fn)=>{fn(ctx);return Promise.resolve()},slots:{inject:(_name,fn)=>fn(),register:(definition,component)=>{slots.push({definition,component})}},remote:{$mount:async()=>{},antigravityAcp:{action:async()=>({ok:true,value:{protocol:2,transport:'headless'}})},commands:{execute:async(session,command,attachments)=>{
     calls.push({session,command,attachments});const request=JSON.parse(command.slice('/antigravity '.length))
     const value=request.action==='defaults'?{version:1,defaults:{model:'gemini-4-neon-high',effort:'high'}}:{version:1,invocationId:request.invocationId,label:'test',status:'running',requested:{model:request.model,effort:request.effort,native:request.native,cwd:'/workspace'},...(request.native?{native:{mode:request.native.mode,observedAgents:1,limit:{maxObservedAgents:request.native.maxObservedAgents??null,hard:false,exceeded:false},completion:{state:'unknown'},children:[{id:'aaaaaaaa-1111-2222-3333-444444444444',kind:'worker',role:'Implement bounded task',state:'unknown'}]}}:{})}
     return {ok:true,value:{result:{kind:'success',text:JSON.stringify(value)}}}
@@ -35,7 +35,7 @@ test('public client launches a direct owner-bound command, loads defaults withou
   await act(async()=>{renderer.root.findAllByType('input').find(i=>i.props.type==='checkbox'&&i.parent.children.some(child=>typeof child==='string'&&child.includes('Analyze supplied evidence'))).props.onChange({target:{checked:true}})})
   assert.equal(renderer.root.findAllByType('button').find(b=>b.children.includes('Start task')).props.disabled,true)
   const settings=slots.find(s=>s.definition.name==='plugins.row.config');let operations,revision
-  const form={state:{status:'ready',writable:true,revision:7,value:{}},mutate:async(ops,rev)=>{operations=ops;revision=rev;return true}}
+  const form={state:{status:'ready',writable:true,revision:7,value:{transport:'headless'}},mutate:async(ops,rev)=>{operations=ops;revision=rev;return true}}
   let config
   await act(async()=>{config=TestRenderer.create(React.createElement(settings.component,{view:'edit',form}))})
   await act(async()=>{config.root.findAllByType('input')[0].props.onChange({target:{value:'/opt/agy'}})})

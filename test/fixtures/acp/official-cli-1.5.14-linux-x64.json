@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "observedAt": "2026-11-23",
+  "platform": "linux",
+  "architecture": "x64",
+  "version": "1.5.14",
+  "binarySha256": "37873b8062391b6202a3d3199ec012abc9e53aab720d26cd65699441497d8c94",
+  "autoUpdateDisabled": true,
+  "authenticationPerformed": false,
+  "inferencePerformed": false,
+  "versionProbe": {
+    "ok": true,
+    "output": "1.5.14\n",
+    "error": "",
+    "exitCode": 0,
+    "signal": null,
+    "overflow": false
+  },
+  "helpProbe": {
+    "ok": true,
+    "output": "",
+    "error": "Usage: agy acp [flags]\n\nStart the Agent Client Protocol (ACP) stdio server\n\nFlags:\n  --add-dir                         Add a directory to the workspace (repeatable) (default [])\n  --agent                           Agent for the ACP session\n  --app-data-dir                    Path where application data is stored (default antigravity-cli)\n  --app_data_dir                    Path where application data is stored (default antigravity-cli)\n  --cli_dir_name                    Subdirectory under app_data_dir for CLI settings and logs\n  --cli_log_file                    Override ACP log file path\n  --cloud_code_endpoint             CCPA API URL (default https://daily-cloudcode-pa.googleapis.com)\n  --dangerously-skip-permissions    Auto-approve all tool permission requests\n  --disable-telemetry               If true, disable telemetry\n  --disable_telemetry               If true, disable telemetry\n  --gemini-dir                      Path where Gemini files are stored (default .gemini)\n  --gemini_dir                      Path where Gemini files are stored (default .gemini)\n  -h                                Show help\n  --help                            Show help\n  --ide-mcp-port                    Port for host IDE tools MCP server (requires 'nc' in $PATH) (default 0)\n  --ide_mcp_port                    Port for host IDE tools MCP server (requires 'nc' in $PATH) (default 0)\n  --include-default-customizations  Include default customizations (default true)\n  --is_google3_workspace            Whether running in Google environment\n  --is_google_internal              Deprecated: use is_google3_workspace\n  --log-file                        Override ACP log file path\n  --login                           Log in with Google interactively, then exit (ACP terminal auth)\n  --override_user_agent_name        Override user agent name for HTTP requests\n  --process-per-session             Serve each session from an isolated worker process\n  --sandbox                         Run in a sandbox with terminal restrictions enabled\n  --stdio                           Use stdio JSON-RPC transport (default)\n  --use_stubby_auth                 Use LOAS auth\n  --worker                          Serve a single session for an ACP front process (internal)\n",
+    "exitCode": 0,
+    "signal": null,
+    "overflow": false
+  },
+  "initializeRequest": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": 1,
+      "clientInfo": {
+        "name": "flywheel-acp-preflight",
+        "version": "0.3.0"
+      },
+      "clientCapabilities": {
+        "fs": {
+          "readTextFile": false,
+          "writeTextFile": false
+        },
+        "terminal": false,
+        "auth": {
+          "terminal": true
+        }
+      }
+    }
+  },
+  "initialize": {
+    "response": {
+      "jsonrpc": "2.0",
+      "result": {
+        "protocolVersion": 1,
+        "agentCapabilities": {
+          "loadSession": true,
+          "load_session": true,
+          "promptCapabilities": {
+            "image": true,
+            "audio": false,
+            "embeddedContext": true
+          },
+          "sessionCapabilities": {
+            "resume": {},
+            "close": {},
+            "load": {},
+            "list": {},
+            "additionalDirectories": {}
+          },
+          "session_capabilities": {
+            "resume": {},
+            "close": {},
+            "load": {},
+            "list": {},
+            "additionalDirectories": {}
+          },
+          "auth": {
+            "logout": {}
+          },
+          "_meta": {
+            "antigravity": {
+              "tier": true,
+              "systemPrompt": {
+                "append": true
+              }
+            }
+          }
+        },
+        "agentInfo": {
+          "name": "Antigravity ACP Server",
+          "version": "1.5.14"
+        },
+        "authMethods": [
+          {
+            "id": "oauth-personal",
+            "name": "Log in with Google",
+            "description": "Log in with your Google account"
+          },
+          {
+            "id": "oauth-business",
+            "name": "Log in with Gemini Enterprise",
+            "description": "Log in with your Gemini Enterprise account"
+          },
+          {
+            "id": "gemini-api-key",
+            "name": "Gemini API key",
+            "description": "Use an API key with Gemini Developer API"
+          },
+          {
+            "id": "agent-platform",
+            "name": "Gemini Enterprise Agent Platform",
+            "description": "Use Gemini Enterprise Agent Platform (formerly Vertex AI) with Application Default Credentials"
+          },
+          {
+            "id": "terminal-login",
+            "name": "Log in from the terminal",
+            "description": "Log in with your Google account by pasting a code in a terminal; works over SSH",
+            "type": "terminal",
+            "args": [
+              "--login"
+            ]
+          }
+        ]
+      },
+      "id": 1
+    },
+    "exitCode": 0,
+    "signal": null,
+    "stderrBytes": 0
+  }
+}
