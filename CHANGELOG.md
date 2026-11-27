@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 — 2026-11-27
+
+- Fix premature 500ms SIGKILL during graceful ACP shutdown on slow SQLite flushes by closing the ACP connection and draining child stdout before sending stdin EOF, and honoring the full `disposeGraceMs` budget before escalating to process-group termination.
+
 ## 0.3.0 — release candidate, unpublished
 
 - Make official, unmodified `agy acp` the default desktop transport for direct human interaction. Keep version-1 task delegation and Agent/PTC tools behind explicit `transport: "headless"`; retain the independently selected legacy machine API.
