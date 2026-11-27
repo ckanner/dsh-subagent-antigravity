@@ -135,6 +135,36 @@ const app = acp.agent({ name: 'fake-agy-acp' })
     if (scenario === 'quota') {
       throw new acp.RequestError(-32001, 'quota exhausted for this account')
     }
+    if (scenario === 'tool-and-thought') {
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'agent_thought_chunk', content: { type: 'text', text: 'Inspecting board rules and verifying SRS table\n' } },
+      })
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'tool_call', toolCallId: 'tc-1', title: 'read_file src/core/types.ts', status: 'in_progress' },
+      })
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'tool_call_update', toolCallId: 'tc-1', title: 'read_file src/core/types.ts', status: 'in_progress' },
+      })
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'tool_call_update', toolCallId: 'tc-1', title: 'read_file src/core/types.ts', status: 'completed' },
+      })
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'clean-final-answer' } },
+      })
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: { sessionUpdate: 'usage_update', size: 1000000, used: 300 },
+      })
+      return {
+        stopReason: 'end_turn',
+        usage: { inputTokens: 140, outputTokens: 50, thoughtTokens: 20, cachedReadTokens: 900, totalTokens: 1090 },
+      }
+    }
     const imageCount = (params.prompt ?? []).filter(block => block.type === 'image').length
     const reply = imageCount > 0 ? `acp-done:${state.model}:images=${imageCount}` : `acp-done:${state.model}:${state.mode}`
     await connection.client.notify(acp.methods.client.session.update, {

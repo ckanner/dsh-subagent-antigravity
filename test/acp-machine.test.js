@@ -62,6 +62,7 @@ test('ACP machine runs unattended session/new, configures model/mode, streams im
   assert.equal(progress, 'acp-done:gemini-4-neon-high:images=1')
   assert.equal(receipt.usage.totalTokens, 180)
   assert.equal(receipt.usage.status, 'complete')
+  assert.equal(receipt.usage.scope, 'turn')
   assert.deepEqual(events.map(e => e.event), ['dispatch-intent', 'dispatch-possible', 'terminal', 'cleanup-confirmed'])
   const sent = JSON.parse(readFileSync(f.env.FIXTURE_INPUT, 'utf8').trim())
   assert.equal(sent.prompt.length, 2)
@@ -144,4 +145,35 @@ test('ACP machine handles request-review denial, auth-required, quota, and abort
   assert.equal(hr.ok, false)
   assert.equal(hr.execution.cancelled, true)
   assert.equal(hr.cleanup.confirmed, true)
+})
+
+test('ACP machine emits per-turn usage scope and streams redacted tool/thought progress without polluting output', async t => {
+  const f = fixture(t, 'tool-and-thought')
+  const progressChunks = []
+  const activityTypes = []
+  const receipt = await runMachine(f.request, {
+    ...f.runtime,
+    onProgress: chunk => progressChunks.push(chunk),
+    onActivity: event => activityTypes.push(...(event.eventTypes ?? [])),
+  })
+  assert.equal(receipt.ok, true, JSON.stringify(receipt.failure))
+  assert.equal(receipt.output[0].text, 'clean-final-answer')
+  assert.equal(receipt.usage.status, 'complete')
+  assert.equal(receipt.usage.scope, 'turn')
+  assert.equal(receipt.usage.inputTokens, 140)
+  assert.equal(receipt.usage.cacheReadTokens, 900)
+  assert.equal(receipt.usage.outputTokens, 50)
+  assert.equal(receipt.usage.thinkingTokens, 20)
+  assert.equal(receipt.usage.totalTokens, 1090)
+
+  assert.ok(progressChunks.some(c => c.includes('[thought] Inspecting board rules')))
+  const inProgressTools = progressChunks.filter(c => c.includes('[tool] read_file src/core/types.ts (in_progress)'))
+  assert.equal(inProgressTools.length, 1, 'duplicate consecutive tool updates should be deduplicated')
+  assert.ok(progressChunks.some(c => c.includes('[tool] read_file src/core/types.ts (completed)')))
+  assert.ok(progressChunks.includes('clean-final-answer'))
+
+  assert.ok(activityTypes.includes('agent_thought_chunk'))
+  assert.ok(activityTypes.includes('tool_call'))
+  assert.ok(activityTypes.includes('tool_call_update'))
+  assert.ok(activityTypes.includes('usage_update'))
 })

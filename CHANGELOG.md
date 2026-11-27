@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 — 2026-11-27
+
+- Mark ACP `session/prompt` per-turn usage receipts with `scope: "turn"` (preserving `scope: "conversation"` strictly for legacy headless CLI mode) so downstream orchestrators can account exact per-invocation token usage and prompt cache hits without double-counting.
+- Forward redacted, bounded single-line `[tool]` and throttled `[thought]` progress summaries to `runtime.onProgress` during ACP turns without contaminating the retained assistant output text.
+
 ## 0.3.1 — 2026-11-27
 
 - Fix premature 500ms SIGKILL during graceful ACP shutdown on slow SQLite flushes by closing the ACP connection and draining child stdout before sending stdin EOF, and honoring the full `disposeGraceMs` budget before escalating to process-group termination.
