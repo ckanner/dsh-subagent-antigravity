@@ -135,6 +135,16 @@ const app = acp.agent({ name: 'fake-agy-acp' })
     if (scenario === 'quota') {
       throw new acp.RequestError(-32001, 'quota exhausted for this account')
     }
+    if (scenario === 'inline-executor-error') {
+      await connection.client.notify(acp.methods.client.session.update, {
+        sessionId: params.sessionId,
+        update: {
+          sessionUpdate: 'agent_message_chunk',
+          content: { type: 'text', text: '\n⚠ failed to construct executor: unknown model key MODEL_PLACEHOLDER_M532: model not found\n' },
+        },
+      })
+      return { stopReason: 'end_turn' }
+    }
     if (scenario === 'tool-and-thought') {
       await connection.client.notify(acp.methods.client.session.update, {
         sessionId: params.sessionId,

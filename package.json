@@ -1,6 +1,6 @@
 {
   "name": "@ckanner/dsh-subagent-antigravity",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "DeepSeek Harness and Flywheel: human-controlled official Antigravity ACP sessions by default, with an explicit legacy machine interface",
   "type": "module",
   "main": "./lib/index.js",

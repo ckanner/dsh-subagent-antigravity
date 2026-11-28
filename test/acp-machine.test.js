@@ -177,3 +177,15 @@ test('ACP machine emits per-turn usage scope and streams redacted tool/thought p
   assert.ok(activityTypes.includes('tool_call_update'))
   assert.ok(activityTypes.includes('usage_update'))
 })
+
+test('ACP machine classifies inline agy executor-construction errors with unknown usage as non-resumable failure', async t => {
+  const f = fixture(t, 'inline-executor-error')
+  const receipt = await runMachine(f.request, f.runtime)
+  assert.equal(receipt.ok, false)
+  assert.equal(receipt.execution.outcome, 'failed')
+  assert.equal(receipt.providerWork.state, 'failed')
+  assert.equal(receipt.session.resumable, false)
+  assert.equal(receipt.failure.stage, 'run')
+  assert.equal(receipt.failure.category, 'provider')
+  assert.match(receipt.failure.detail, /failed to construct executor: unknown model key MODEL_PLACEHOLDER_M532/)
+})

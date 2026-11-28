@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3 — 2026-11-27
+
+- Classify inline `agy` executor-construction error banners emitted on `end_turn` with `usage.status === "unknown"` (e.g. `⚠ failed to construct executor: unknown model key ...: model not found`) as non-resumable failures (`ok: false`, `outcome: "failed"`, `session.resumable: false`) instead of silent successes, so orchestrators retire poisoned threads cleanly instead of looping resume retries.
+
 ## 0.3.2 — 2026-11-27
 
 - Mark ACP `session/prompt` per-turn usage receipts with `scope: "turn"` (preserving `scope: "conversation"` strictly for legacy headless CLI mode) so downstream orchestrators can account exact per-invocation token usage and prompt cache hits without double-counting.
